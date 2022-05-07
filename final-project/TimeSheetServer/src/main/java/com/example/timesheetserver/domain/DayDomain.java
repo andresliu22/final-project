@@ -7,7 +7,7 @@ import lombok.ToString;
 @Data
 @Builder
 @ToString
-public class dayDomain {
+public class DayDomain {
     private String date;
     private String day;
     private String endTime;

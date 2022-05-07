@@ -7,11 +7,11 @@ import java.util.List;
 
 @Data
 @Builder
-public class timeSheetDomain {
+public class TimeSheetDomain {
 
     private int userid;
 
-    private List<dayDomain> days;
+    private List<DayDomain> days;
 
     private int totalBillingHours;
 

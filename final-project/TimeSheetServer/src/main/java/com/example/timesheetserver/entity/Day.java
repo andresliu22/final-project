@@ -4,7 +4,7 @@ import lombok.Generated;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 
-public class day {
+public class Day {
 
     @Id
     @Generated()
@@ -20,7 +20,7 @@ public class day {
 
 
     @PersistenceConstructor
-    public day( String date,String day,String endTime,Boolean isFloating,Boolean isHoliday,Boolean isVacation,String startTime) {
+    public Day(String date, String day, String endTime, Boolean isFloating, Boolean isHoliday, Boolean isVacation, String startTime) {
         this.date=date;
         this.day=day;
         this.endTime=endTime;

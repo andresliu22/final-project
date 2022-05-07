@@ -14,11 +14,10 @@ import java.util.List;
 @ToString
 @Document(collection="timeSheet")
 
-public class timeSheet {
+public class TimeSheet {
     @Id
     @Generated
     private String id;
-
     private int userid;
 
     private List<String> days;
@@ -37,10 +36,12 @@ public class timeSheet {
 
     private String filePath;
 
+    private String weekEnd;
+
 
     @PersistenceConstructor
-    public timeSheet(int userid,List<String> days,int totalBillingHours,int totalCompensatedHours, String approvalStatus,String submissionStatus,
-                     int floatingDaysWeek,int vocationDaysWeek,String filePath) {
+    public TimeSheet(int userid, List<String> days, int totalBillingHours, int totalCompensatedHours, String approvalStatus, String submissionStatus,
+                     int floatingDaysWeek, int vocationDaysWeek, String filePath,String weekEnd) {
         this.userid = userid;
         this.days = days;
         this.totalBillingHours = totalBillingHours;
@@ -50,6 +51,7 @@ public class timeSheet {
         this.floatingDaysWeek = floatingDaysWeek;
         this.vocationDaysWeek = vocationDaysWeek;
         this.filePath = filePath;
+        this.weekEnd=weekEnd;
     }
 
 
