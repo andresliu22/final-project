@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CompositeServer/CompositeServer.iml" filepath="$PROJECT_DIR$/CompositeServer/CompositeServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConfigServer/ConfigServer.iml" filepath="$PROJECT_DIR$/ConfigServer/ConfigServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EmployeeServer/EmployeeServer.iml" filepath="$PROJECT_DIR$/EmployeeServer/EmployeeServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EurekaServer/EurekaServer.iml" filepath="$PROJECT_DIR$/EurekaServer/EurekaServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GatewayServer/GatewayServer.iml" filepath="$PROJECT_DIR$/GatewayServer/GatewayServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimeSheetServer/TimeSheetServer.iml" filepath="$PROJECT_DIR$/TimeSheetServer/TimeSheetServer.iml" />
+    </modules>
+  </component>
+</project>
