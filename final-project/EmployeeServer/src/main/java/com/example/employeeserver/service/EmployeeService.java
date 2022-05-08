@@ -18,6 +18,16 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+
+
+    @Transactional(readOnly = true)
+    public List<Employee> getAllEmployees() {
+        List<Employee> employeeList = employeeRepository.findAll();
+       if (!employeeList.isEmpty()){
+        return employeeList;
+        }
+        throw new NoEmployeeFoundException(String.format("No Employee found"));
+    }
     @Transactional(readOnly = true)
     public EmployeeDomain findEmployeeById(Integer id) {
         Optional<Employee> employeeOptional = employeeRepository.findById(id);

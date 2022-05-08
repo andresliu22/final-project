@@ -45,4 +45,9 @@ public class EmployeeController {
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee, @PathVariable Integer employeeId) {
         return ResponseEntity.ok().body(employeeService.updateEmployeeById(employee, employeeId));
     }
+
+    @GetMapping("/employee/getAllEmployees")
+    public ResponseEntity getAllEmployees(){
+        return ResponseEntity.ok(employeeService.getAllEmployees());
+    }
 }
