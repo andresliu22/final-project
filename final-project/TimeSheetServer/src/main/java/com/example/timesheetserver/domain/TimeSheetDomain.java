@@ -28,4 +28,6 @@ public class TimeSheetDomain {
 
     private String filePath;
 
+    private String weekEnd;
+
 }
