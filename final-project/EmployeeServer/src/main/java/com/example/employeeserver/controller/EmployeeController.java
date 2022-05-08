@@ -40,4 +40,9 @@ public class EmployeeController {
     public Employee addEmployee(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
     }
+
+    @PostMapping("/update-employee/{employeeId}")
+    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee, @PathVariable Integer employeeId) {
+        return ResponseEntity.ok().body(employeeService.updateEmployeeById(employee, employeeId));
+    }
 }

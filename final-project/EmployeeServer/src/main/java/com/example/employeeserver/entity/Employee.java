@@ -39,9 +39,9 @@ public class Employee implements Serializable {
 //    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.MERGE)
 //    private User user;
 
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "address", cascade = CascadeType.MERGE)
-//    private Set<Address> addresses = new HashSet<>();
-//
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "emergency_contact", cascade = CascadeType.MERGE)
-//    private Set<EmergencyContact> emergencyContacts = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee", cascade = CascadeType.MERGE)
+    private Set<Address> addresses = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee", cascade = CascadeType.MERGE)
+    private Set<EmergencyContact> emergencyContacts = new HashSet<>();
 }
