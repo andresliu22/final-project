@@ -1,12 +1,9 @@
 package com.example.timesheetserver.dao;
 
 import com.example.timesheetserver.entity.TimeSheet;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TimesheetRepo extends MongoRepository<TimeSheet, String> {
 
@@ -21,7 +18,7 @@ public interface TimesheetRepo extends MongoRepository<TimeSheet, String> {
 //
     TimeSheet findByWeekEndAndUserid(String weekEnd, int userid);
 
-
+    List<TimeSheet> findByUserid(int userId);
 
 
 //    @Query(value="{'name': {'$ne': ?0} }")
