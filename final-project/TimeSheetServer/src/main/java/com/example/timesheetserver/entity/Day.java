@@ -13,8 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Day {
 
     @Id
-    @Generated()
-    private int id;
+    @Generated
+    private String id;
 
     private String date;
     private String day;

@@ -25,8 +25,8 @@ public class TimeSheetService {
     @Autowired
     private TimesheetRepo timesheetRepo;
 
-    @Transactional
-    public void createSummary()
+//    @Transactional
+//    public void createSummary();
 
 
 //    @Transactional(readOnly=true)
@@ -80,7 +80,7 @@ public class TimeSheetService {
             e.printStackTrace();
         }
         //System.out.println("before dao");
-        TimeSheet ts = timesheetRepo.findtimeSheetsBy(weekEnd, userid);
+        TimeSheet ts = timesheetRepo.findByWeekEnd(weekEnd);
 
         if (ts != null) {
             return timesheetToDomain(ts);
@@ -111,7 +111,8 @@ public class TimeSheetService {
 
     @Transactional
     public void createTimeSheet(TimeSheetDomain timesheetDomain) {
-        List<String> days = timesheetDomain.getDays().stream().map(d->{
+        System.out.println("enter here!");
+        List<String> daysid = timesheetDomain.getDays().stream().map(d->{
                 Day newday = new Day();
                 newday.setDate(d.getDate());
                 newday.setDay(d.getDay());
@@ -122,14 +123,18 @@ public class TimeSheetService {
                 newday.setEndTime(d.getEndTime());
 
                 Day afterInsert = dayRepo.insert(newday);
-                return afterInsert.getDay();
+                return afterInsert.getId();
             }).collect(Collectors.toList());
+
+//        List<String> newid = daysid.stream()
+//                .map(String::valueOf)
+//                .collect(Collectors.toList());
 
         TimeSheet ts = new TimeSheet();
         ts.setUserid(timesheetDomain.getUserid());
         ts.setTotalBillingHours(timesheetDomain.getTotalBillingHours());
         ts.setTotalCompensatedHours(timesheetDomain.getTotalCompensatedHours());
-        ts.setDays(days);
+        ts.setDays(daysid);
         ts.setApprovalStatus(timesheetDomain.getApprovalStatus());
         ts.setSubmissionStatus(timesheetDomain.getSubmissionStatus());
         ts.setWeekEnd(timesheetDomain.getWeekEnd());

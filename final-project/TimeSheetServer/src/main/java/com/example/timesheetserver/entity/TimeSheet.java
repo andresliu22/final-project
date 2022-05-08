@@ -12,12 +12,13 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
-@Document(collection="timeSheet")
+@Document(collection="timesheet")
 
 public class TimeSheet {
     @Id
     @Generated
     private String id;
+
 
     private int userid;
 
