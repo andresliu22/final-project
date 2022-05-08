@@ -66,10 +66,14 @@ public class TimeSheetService {
     }*/
 
     @Transactional
-    public void deleteTimeSheetById(String tsId) {
-        timesheetRepo.deleteById(tsId);
+    public void deleteTimeSheet(int userId, String weekEnd) {
+        timesheetRepo.deleteByUseridAndWeekEnd(userId, weekEnd);
     }
 
+    @Transactional
+    public void deleteTimeSheetById(int userId) {
+        timesheetRepo.deleteByUserid(userId);
+    }
 
 
     @Transactional(readOnly=true)
@@ -80,13 +84,13 @@ public class TimeSheetService {
             e.printStackTrace();
         }
         //System.out.println("before dao");
-        TimeSheet ts = timesheetRepo.findByWeekEnd(weekEnd);
+        TimeSheet ts = timesheetRepo.findByWeekEndAndUserid(weekEnd, userid);
 
         if (ts != null) {
             return timesheetToDomain(ts);
         }
 
-        throw new RuntimeException("No product found");
+        throw new RuntimeException("No timesheet found!");
     }
 
     /*@Transactional(readOnly=true)
@@ -111,7 +115,7 @@ public class TimeSheetService {
 
     @Transactional
     public void createTimeSheet(TimeSheetDomain timesheetDomain) {
-        System.out.println("enter here!");
+        //System.out.println("enter here!");
         List<String> daysid = timesheetDomain.getDays().stream().map(d->{
                 Day newday = new Day();
                 newday.setDate(d.getDate());
@@ -146,7 +150,37 @@ public class TimeSheetService {
     }
 
 
+    @Transactional
+    public void saveTimeSheet(TimeSheetDomain timesheetDomain){
+        List<String> daysid = timesheetDomain.getDays().stream().map(d->{
+            Day newday = new Day();
+            newday.setDate(d.getDate());
+            newday.setDay(d.getDay());
+            newday.setIsFloating(d.getIsFloating());
+            newday.setIsHoliday(d.getIsHoliday());
+            newday.setIsVacation(d.getIsVacation());
+            newday.setStartTime(d.getStartTime());
+            newday.setEndTime(d.getEndTime());
 
+            Day afterInsert = dayRepo.save(newday);
+            return afterInsert.getId();
+        }).collect(Collectors.toList());
+
+
+        TimeSheet ts = new TimeSheet();
+        ts.setUserid(timesheetDomain.getUserid());
+        ts.setTotalBillingHours(timesheetDomain.getTotalBillingHours());
+        ts.setTotalCompensatedHours(timesheetDomain.getTotalCompensatedHours());
+        ts.setDays(daysid);
+        ts.setApprovalStatus(timesheetDomain.getApprovalStatus());
+        ts.setSubmissionStatus(timesheetDomain.getSubmissionStatus());
+        ts.setWeekEnd(timesheetDomain.getWeekEnd());
+        ts.setFloatingDaysWeek(timesheetDomain.getFloatingDaysWeek());
+        ts.setVocationDaysWeek(timesheetDomain.getVocationDaysWeek());
+        ts.setFilePath(timesheetDomain.getFilePath());
+
+        timesheetRepo.save(ts);
+    }
 
 
     // Convert timesheet entity  to domain
@@ -178,6 +212,8 @@ public class TimeSheetService {
                 .submissionStatus(ts.getSubmissionStatus())
                 .floatingDaysWeek(ts.getFloatingDaysWeek())
                 .vocationDaysWeek(ts.getVocationDaysWeek())
+                .filePath(ts.getFilePath())
+                .weekEnd(ts.getWeekEnd())
                 .build();
     }
 

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.timesheetserver.service.TimeSheetService;
 import com.example.timesheetserver.domain.TimeSheetDomain;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/timeSheet")
 public class TimeSheetController {
@@ -30,4 +32,33 @@ public class TimeSheetController {
         return new ResponseEntity(tsd, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteTimeSheet(@RequestParam(required=true) Integer userid, @RequestParam(required=true) String weekEnd) {
+        timeSheetService.deleteTimeSheet(userid, weekEnd);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete_by_id")
+    public ResponseEntity createById(@RequestParam(required=true) Integer userid) {
+        timeSheetService.deleteTimeSheetById(userid);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/get_timesheet")
+    public ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestParam(required=true) Integer userid, @RequestParam(required=true) String weekEnd){
+        TimeSheetDomain tsd = timeSheetService.getTimeSheetDomain(weekEnd,userid);
+        return ResponseEntity.ok().body(tsd);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity update(@RequestBody TimeSheetDomain tsd){
+        timeSheetService.saveTimeSheet(tsd);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+//    @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="No Pet is found")
+//    @ExceptionHandler(NoPetFoundException.class)
+//    public void noPetFound(HttpServletRequest req, NoPetFoundException e) {
+//        LOGGER.warn("URI: "+req.getRequestURI()+", NoPetFoundException: "+e.getMessage());
+//    }
 }

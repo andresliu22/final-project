@@ -11,13 +11,16 @@ import java.util.Optional;
 public interface TimesheetRepo extends MongoRepository<TimeSheet, String> {
 
 
-//    void deleteByName(String name);
+    void deleteByUseridAndWeekEnd(int userid, String weekEnd);
+
+    void deleteByUserid(int userid);
 
     // https://docs.spring.io/spring-data/mongodb/docs/1.2.0.RELEASE/reference/html/mongo.repositories.html
 
 //    Optional<TimeSheet> findFirst5ByWeekEnd(String weekEnd, Sort sort);
 //
-    TimeSheet findByWeekEnd(String weekend);
+    TimeSheet findByWeekEndAndUserid(String weekEnd, int userid);
+
 
 
 
