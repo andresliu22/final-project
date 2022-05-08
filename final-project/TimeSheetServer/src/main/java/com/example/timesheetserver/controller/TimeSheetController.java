@@ -2,6 +2,7 @@ package com.example.timesheetserver.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,8 @@ public class TimeSheetController {
     private TimeSheetService timeSheetService;
 
 
-    @GetMapping("/getSummary")
-    public SummariesResponse getSummaries();
+    @GetMapping("/Create")
+    public ResponseEntity createSummary(){
+
+    };
 }

@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TimesheetRepo extends MongoRepository<TimeSheet, String> {
-    Optional<TimeSheet> findByName(String name);
+
+
     void deleteByName(String name);
 
     // https://docs.spring.io/spring-data/mongodb/docs/1.2.0.RELEASE/reference/html/mongo.repositories.html

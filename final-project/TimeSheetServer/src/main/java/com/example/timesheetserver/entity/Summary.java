@@ -2,6 +2,7 @@ package com.example.timesheetserver.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -21,4 +22,14 @@ public class Summary {
     private String approvalStatues;
     private String option;
     private String comment;
+
+    @PersistenceConstructor
+    public Summary(String id, String weekEnding,int totalHours,String submissionStatus,String approvalStatues,String option,String comment) {
+        this.id=id;
+        this.weekEnding=weekEnding;
+        this.submissionStatus=submissionStatus;
+        this.approvalStatues=approvalStatues;
+        this.option=option;
+        this.comment=comment;
+    }
 }
