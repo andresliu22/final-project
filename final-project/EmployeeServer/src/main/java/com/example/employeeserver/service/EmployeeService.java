@@ -36,25 +36,19 @@ public class EmployeeService {
         throw new NoEmployeeFoundException(String.format("Employee with id [%s] not found", id));
     }
 
-//    @Transactional(readOnly = true)
-//    public List<EmployeeDomain> findSync(List<String> names){
-//        List<EmployeeDomain> res = names.stream().map(name -> {
-//            try {
-//                TimeUnit.SECONDS.sleep(3);
-//            } catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//
-//            return employeeRepository.findEmployeeByName(name);
-//        }).filter(Optional::isPresent).map(po -> {
-//            Employee employee = po.get();
-//            return EmployeeDomain.builder().firstName(employee.getFirstName())
-//                    .lastName(employee.getLastName())
-//                    .email(employee.getEmail())
-//                    .cellPhone(employee.getCellPhone())
-//                    .build();
-//        }).collect(Collectors.toList());
-//
-//        return res;
-//    }
+    @Transactional(readOnly = true)
+    public Employee updateEmployeeById(Employee employee, Integer id) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (employeeOptional.isPresent()) {
+            Employee updatedEmployee = employeeOptional.get();
+
+            updatedEmployee.setCellPhone(employee.getCellPhone());
+            updatedEmployee.setEmail(employee.getEmail());
+            updatedEmployee.setAddresses(employee.getAddresses());
+            employeeRepository.save(updatedEmployee);
+            return updatedEmployee;
+        }
+
+        throw new NoEmployeeFoundException(String.format("Employee with id [%s] not found", id));
+    }
 }
