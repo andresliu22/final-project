@@ -11,7 +11,7 @@ public class SummaryDomain {
     private String weekEnding;
     private int totalHours;
     private String submissionStatus;
-    private String approvalStatues;
+    private String approvalStatus;
     private String option;
     private String comment;
 }

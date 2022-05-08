@@ -17,6 +17,7 @@ public class Summary {
     @Generated
     private String id;
     private String weekEnding;
+
     private int totalHours;
     private String submissionStatus;
     private String approvalStatues;
@@ -30,6 +31,7 @@ public class Summary {
         this.submissionStatus=submissionStatus;
         this.approvalStatues=approvalStatues;
         this.option=option;
+        this.totalHours=totalHours;
         this.comment=comment;
     }
 }
