@@ -24,7 +24,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @GetMapping("/employee-id/{employeeId}")
+    @GetMapping("/employee/employee-id/{employeeId}")
     public ResponseEntity<EmployeeDomain> getEmployeeById(@PathVariable Integer employeeId) {
         LOGGER.warn("/employee/employee-id/" + employeeId);
         return ResponseEntity.ok().body(employeeService.findEmployeeById(employeeId));
@@ -36,12 +36,12 @@ public class EmployeeController {
         LOGGER.warn("URI: "+req.getRequestURI()+", NoEmployeeFoundException: "+e.getMessage());
     }
 
-    @PostMapping("/add-employee")
+    @PostMapping("/employee/add-employee")
     public Employee addEmployee(@RequestBody Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    @PostMapping("/update-employee/{employeeId}")
+    @PostMapping("/employee/update-employee/{employeeId}")
     public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee, @PathVariable Integer employeeId) {
         return ResponseEntity.ok().body(employeeService.updateEmployeeById(employee, employeeId));
     }
