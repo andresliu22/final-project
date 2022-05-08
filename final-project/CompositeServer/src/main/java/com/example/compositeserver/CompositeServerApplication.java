@@ -10,4 +10,5 @@ public class CompositeServerApplication {
         SpringApplication.run(CompositeServerApplication.class, args);
     }
 
+
 }
