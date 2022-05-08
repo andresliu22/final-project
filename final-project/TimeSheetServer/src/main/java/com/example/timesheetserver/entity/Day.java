@@ -1,9 +1,15 @@
 package com.example.timesheetserver.entity;
 
-import lombok.Generated;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+@Document(collection="day")
 public class Day {
 
     @Id

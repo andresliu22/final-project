@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import com.example.timesheetserver.domain.DayDomain;
 
 @Data
 @Builder
