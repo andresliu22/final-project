@@ -8,14 +8,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="EurekaServer" />
+        <module name="TimeSheetServer" />
+        <module name="AuthServer" />
         <module name="EmployeeServer" />
         <module name="ConfigServer" />
         <module name="GatewayServer" />
         <module name="CompositeServer" />
-        <module name="TimeSheetServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="AuthServer" target="1.8" />
       <module name="CompositeServer" target="1.8" />
       <module name="ConfigServer" target="1.8" />
       <module name="EmployeeServer" target="1.8" />
@@ -26,6 +28,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="AuthServer" options="-parameters" />
       <module name="CompositeServer" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
       <module name="EmployeeServer" options="-parameters" />
