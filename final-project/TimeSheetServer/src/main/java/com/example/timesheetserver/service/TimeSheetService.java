@@ -3,43 +3,45 @@ package com.example.timesheetserver.service;
 import com.example.timesheetserver.dao.DayRepo;
 import com.example.timesheetserver.dao.TimesheetRepo;
 import com.example.timesheetserver.domain.DayDomain;
+import com.example.timesheetserver.domain.SummaryDomain;
 import com.example.timesheetserver.domain.TimeSheetDomain;
-import com.example.timesheetserver.domain.DayDomain;
 import com.example.timesheetserver.entity.Day;
 import com.example.timesheetserver.entity.TimeSheet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductService {
+public class TimeSheetService {
     @Autowired
     private DayRepo dayRepo;
 
     @Autowired
     private TimesheetRepo timesheetRepo;
 
-    /*@Transactional(readOnly=true)
-    public List<SummaryDomain> getSummary(int userid) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(name+" name");
-        Optional<Product> productOptional = productRepo.findByName(name);
-
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-            return List<SummaryDomain>;
-        }
-
-        throw new RuntimeException("No product found");
-    }*/
+//    @Transactional(readOnly=true)
+//    public List<SummaryDomain> getSummary(String WeekEnd, int userid) {
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Optional<TimeSheet> ts = timesheetRepo.findFirst5ByWeekEnd(WeekEnd, Sort.sort());
+//
+//        if (ts.isPresent()) {
+//            Product product = productOptional.get();
+//            return List<SummaryDomain>;
+//        }
+//
+//        throw new RuntimeException("No product found");
+//    }
 
     /*@Transactional(readOnly=true)
     public List<SummarYDomain> getFiveMore( int userid) {
@@ -59,7 +61,10 @@ public class ProductService {
         throw new RuntimeException("No product found");
     }*/
 
-
+    @Transactional
+    public void deleteTimeSheetById(String tsId) {
+        timesheetRepo.deleteById(tsId);
+    }
 
 
 
@@ -100,27 +105,36 @@ public class ProductService {
 
 
 
-    /*@Transactional
-    public void createTimeSheet(timeSheetDomain timesheetDomain) {
-        List<String> newIngredientIds = productDomain.getIngredients().stream().map(i->{
-                Ingredient ingredient = new Ingredient();
-                ingredient.setName(i.getName());
-                ingredient.setType(i.getType());
-                ingredient.setIsVerified(i.getIsVerified());
+    @Transactional
+    public void createTimeSheet(TimeSheetDomain timesheetDomain) {
+        List<String> days = timesheetDomain.getDays().stream().map(d->{
+                Day newday = new Day();
+                newday.setDate(d.getDate());
+                newday.setDay(d.getDay());
+                newday.setIsFloating(d.getIsFloating());
+                newday.setIsHoliday(d.getIsHoliday());
+                newday.setIsVacation(d.getIsVacation());
+                newday.setStartTime(d.getStartTime());
+                newday.setEndTime(d.getEndTime());
 
-                Ingredient newIngredient = ingredientRepo.insert(ingredient);
-                return newIngredient.getId();
+                Day afterInsert = dayRepo.insert(newday);
+                return afterInsert.getDay();
             }).collect(Collectors.toList());
 
-        Product newProduct = new Product();
-        newProduct.setName(productDomain.getName());
-        newProduct.setPrice(productDomain.getPrice());
-        newProduct.setPopularity(productDomain.getPopularity());
-        newProduct.setIngredients(newIngredientIds);
+        TimeSheet ts = new TimeSheet();
+        ts.setUserid(timesheetDomain.getUserid());
+        ts.setTotalBillingHours(timesheetDomain.getTotalBillingHours());
+        ts.setTotalCompensatedHours(timesheetDomain.getTotalCompensatedHours());
+        ts.setDays(days);
+        ts.setApprovalStatus(timesheetDomain.getApprovalStatus());
+        ts.setSubmissionStatus(timesheetDomain.getSubmissionStatus());
+        ts.setWeekEnd(timesheetDomain.getWeekEnd());
+        ts.setFloatingDaysWeek(timesheetDomain.getFloatingDaysWeek());
+        ts.setVocationDaysWeek(timesheetDomain.getVocationDaysWeek());
+        ts.setFilePath(timesheetDomain.getFilePath());
 
-        productRepo.insert(newProduct);
+        timesheetRepo.insert(ts);
     }
-*/
 
 
 
