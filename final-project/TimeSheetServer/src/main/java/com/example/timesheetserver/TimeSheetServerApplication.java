@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -41,18 +42,26 @@ public class TimeSheetServerApplication {
             return;
         }
         if(smRepo.findTopByOrderByWeekEndingDesc()==null){
-            DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             List<String> dates=collectLocalDates(LocalDate.now().minusMonths(2),LocalDate.now());
             for(String s:dates){
                 LocalDate d=LocalDate.parse(s);
                 if(DayOfWeek.of(d.get(ChronoField.DAY_OF_WEEK))==DayOfWeek.SATURDAY){
+
                     addSummary(s);
                 }
             }
         }
 
 
-        LocalDate weekEnding=LocalDate.parse(smRepo.findTopByOrderByWeekEndingDesc().getWeekEnding().replaceAll("/","-"));
+        String weekE=smRepo.findTopByOrderByWeekEndingDesc().getWeekEnding().replaceAll("/","-");
+        String[] format=weekE.split("-");
+        StringBuilder sb=new StringBuilder();
+        sb.append(format[2]+"-");
+        sb.append(format[0]+"-");
+        sb.append(format[1]);
+        weekE=sb.toString();
+
+        LocalDate weekEnding=LocalDate.parse(weekE);
         LocalDate cur=LocalDate.now();
         if(weekEnding.isBefore(cur)){
             LocalDate d=weekEnding.plusWeeks(1);
@@ -64,7 +73,14 @@ public class TimeSheetServerApplication {
 
     public void addSummary(String date){
         Summary sm=new Summary();
-        sm.setWeekEnding(date.replaceAll("-","/"));
+        String[] format=date.split("-");
+        StringBuilder sb=new StringBuilder();
+        sb.append(format[1]+"/");
+        sb.append(format[2]+"/");
+        sb.append(format[0]);
+        date=sb.toString();
+
+        sm.setWeekEnding(date);
         sm.setOption("edit");
         sm.setComment("");
         sm.setTotalHours(40);
@@ -76,11 +92,8 @@ public class TimeSheetServerApplication {
     public static List<String> collectLocalDates(LocalDate start, LocalDate end){
 
         return Stream.iterate(start, localDate -> localDate.plusDays(1))
-
                 .limit(ChronoUnit.DAYS.between(start, end) + 1)
-
                 .map(LocalDate::toString)
-
                 .collect(Collectors.toList());
     }
 

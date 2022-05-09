@@ -36,9 +36,21 @@ public class SummaryController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("showmore")
+    public ResponseEntity showMore(@RequestBody List<SummaryDomain> ls){
+        return ResponseEntity.ok(summaryService.ShowMore(ls));
+    }
+
     @GetMapping("/delete")
     public void deleteSummary(){
         summaryService.deleteAll();
     };
+
+
+    @GetMapping("/edit")
+    public ResponseEntity edit(@RequestParam String weekEnding){
+
+    }
 }
 

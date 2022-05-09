@@ -1,16 +1,25 @@
 spring:
   application:
-    name: final-project
+    name: gateway-service
   cloud:
     gateway:
       routes:
-        - id: EmployeeServer
-          uri: lb://EmployeeServer
+        - id: employee-service
+          uri: lb://employee-service
           predicates:
-            - Path=/**
+            - Path=/employee/**
+        - id: timesheet-service
+          uri: lb://timesheet-service
+          predicates:
+            - Path=/timesheet/**
+        - id: composite-service
+          uri: lb://composite-service
+          predicates:
+            - Path=/composite/**
 
 server:
-  port: ${PORT:0}
+#  port: ${PORT:0}
+  port: 8080
 
 eureka:
   instance:
