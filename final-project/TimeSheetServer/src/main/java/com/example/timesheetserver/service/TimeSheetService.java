@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.timesheetserver.service.AmazonS3Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Time;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Integer.parseInt;
 
 @Service
 public class TimeSheetService {
@@ -25,45 +29,8 @@ public class TimeSheetService {
     @Autowired
     private TimesheetRepo timesheetRepo;
 
-//    @Transactional
-//    public void createSummary();
-
-
-//    @Transactional(readOnly=true)
-//    public List<SummaryDomain> getSummary(String WeekEnd, int userid) {
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Optional<TimeSheet> ts = timesheetRepo.findFirst5ByWeekEnd(WeekEnd, Sort.sort());
-//
-//        if (ts.isPresent()) {
-//            Product product = productOptional.get();
-//            return List<SummaryDomain>;
-//        }
-//
-//        throw new RuntimeException("No product found");
-//    }
-
-    /*@Transactional(readOnly=true)
-    public List<SummarYDomain> getFiveMore( int userid) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(name+" name");
-        Optional<Product> productOptional = productRepo.findByName(name);
-
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-            return List<SummaryDomain>;
-        }
-
-        throw new RuntimeException("No product found");
-    }*/
+    @Autowired
+    private AmazonS3Service s3Service;
 
     @Transactional
     public void deleteTimeSheet(int userId, String weekEnd) {
@@ -161,41 +128,108 @@ public class TimeSheetService {
 
 
     @Transactional
-    public void saveTimeSheet(TimeSheetDomain tsd){
+    public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd){
+//        String path = tsd.getFilePath();
+//        if (file != null) path = s3Service.uploadFile(file);
+
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
+
+
+        if (tsOP.isPresent()) {
+            System.out.println("Enter tsop");
+            TimeSheet ts = tsOP.get();
+            System.out.println(ts);
+            //update each day
+            int count = 0;
+            for (int i = 0; i < ts.getDays().size(); i++) {
+                String did = ts.getDays().get(i);
+
+                Optional<Day> dayOptional = dayRepo.findById(did);
+
+                if (dayOptional.isPresent()) {
+
+                    System.out.println("Enter day");
+                    Day day = dayOptional.get();
+                    day.setDay(tsd.getDays().get(i).getDay());
+                    day.setDate(tsd.getDays().get(i).getDate());
+                    day.setStartTime(tsd.getDays().get(i).getStartTime());
+                    day.setEndTime(tsd.getDays().get(i).getEndTime());
+                    day.setIsVacation(tsd.getDays().get(i).getIsVacation());
+                    day.setIsHoliday(tsd.getDays().get(i).getIsHoliday());
+                    day.setIsFloating(tsd.getDays().get(i).getIsFloating());
+
+                    dayRepo.save(day);
+                    count += getTotalBillingHours(tsd.getDays().get(i).getStartTime(), tsd.getDays().get(i).getEndTime()
+                            , tsd.getDays().get(i).getDay());
+
+
+                }
+            }
+            System.out.println(count);
+//            ts.setFilePath(path);
+            ts.setTotalBillingHours(count);
+            timesheetRepo.save(ts);
+        }
+    }
+
+    int getTotalBillingHours(String sds, String tds, String day) {
+        if ( !day.equals("Sunday") && !day.equals("Saturday") && !sds.equals("N/A") && !tds.equals("N/A")) {
+            int sd = parseInt(sds.replaceAll("\\D+",""));
+            int ed = parseInt(tds.replaceAll("\\D+",""));
+            return ed < sd ? ((ed + 12 -sd) > 8 ? 8 : (ed + 12 -sd)): ed-sd;
+        }
+        else return 0;
+    }
+
+
+
+
+    @Transactional
+    public void setDefault(TimeSheetDomain tsd){
+        Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid("00/00/0000", tsd.getUserid()));
 
 
         if (tsOP.isPresent()) {
             TimeSheet ts = tsOP.get();
             System.out.println(ts);
             //update each day
+            int count = 0;
             for (int i = 0; i < ts.getDays().size(); i++) {
-                String did = ts.getDays().get(0);
+                String did = ts.getDays().get(i);
 
                 Optional<Day> dayOptional = dayRepo.findById(did);
 
                 if (dayOptional.isPresent()) {
                     Day day = dayOptional.get();
-                    day.setDay(tsd.getDays().get(0).getDay());
-                    day.setDate(tsd.getDays().get(0).getDate());
-                    day.setStartTime(tsd.getDays().get(0).getStartTime());
-                    day.setEndTime(tsd.getDays().get(0).getEndTime());
-                    day.setIsVacation(tsd.getDays().get(0).getIsVacation());
-                    day.setIsHoliday(tsd.getDays().get(0).getIsHoliday());
-                    day.setIsFloating(tsd.getDays().get(0).getIsFloating());
+                    day.setDay(tsd.getDays().get(i).getDay());
+                    day.setDate(tsd.getDays().get(i).getDate());
+                    day.setStartTime(tsd.getDays().get(i).getStartTime());
+                    day.setEndTime(tsd.getDays().get(i).getEndTime());
+                    day.setIsVacation(tsd.getDays().get(i).getIsVacation());
+                    day.setIsHoliday(tsd.getDays().get(i).getIsHoliday());
+                    day.setIsFloating(tsd.getDays().get(i).getIsFloating());
 
                     dayRepo.save(day);
+
+                    int sd = parseInt(tsd.getDays().get(i).getStartTime().replaceAll("\\D+",""));
+                    int ed = parseInt(tsd.getDays().get(i).getEndTime().replaceAll("\\D+",""));
+
+                    count += ed < sd ? ((ed + 12 -sd) > 8 ? 8 : (ed + 12 -sd)): ed-sd;
                 }
             }
 
             ts.setFilePath(tsd.getFilePath());
-            ts.setTotalBillingHours(tsd.getTotalBillingHours());
+            ts.setTotalBillingHours(count);
             timesheetRepo.save(ts);
+        }
+        else {
+            tsd.setWeekEnd("00/00/0000");
+
         }
 
 
-    }
 
+    }
 
     // Convert timesheet entity  to domain
     TimeSheetDomain timesheetToDomain(TimeSheet ts) {
