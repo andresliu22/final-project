@@ -5,10 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.3</version>
+        <version>2.6.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
+
     <artifactId>EmployeeServer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>EmployeeServer</name>
@@ -39,10 +40,6 @@
             <artifactId>spring-cloud-starter-config</artifactId>
             <version>3.1.2</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -88,27 +85,6 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.hibernate</groupId>-->
-<!--            <artifactId>hibernate-core</artifactId>-->
-<!--            <version>5.6.3.Final</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.hibernate</groupId>-->
-<!--            <artifactId>hibernate-entitymanager</artifactId>-->
-<!--            <version>6.0.0.Alpha7</version>-->
-<!--        </dependency>-->
-        <!-- Dependencies for Zipkin and Sleuth -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-zipkin</artifactId>-->
-<!--            <version>2.2.4.RELEASE</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-sleuth</artifactId>-->
-<!--            <version>3.1.2</version>-->
-<!--        </dependency>-->
 
         <!--         Dependencies for LogStash-->
         <dependency>
@@ -130,7 +106,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-            <version>3.0.3</version>
+            <version>3.1.2</version>
         </dependency>
     </dependencies>
 

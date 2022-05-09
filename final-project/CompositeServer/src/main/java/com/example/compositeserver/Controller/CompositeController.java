@@ -20,7 +20,7 @@ public class CompositeController {
         this.compositeService = compositeService;
     }
 
-    @GetMapping("getAllEmployee")
+    @GetMapping("/getAllEmployee")
     public ResponseEntity getAllEmployee(){
         return ResponseEntity.ok(compositeService.getAllEmployees());
     }
