@@ -8,15 +8,16 @@ spring:
           uri: lb://employee-service
           predicates:
             - Path=/employee-service/**
-        - id: timesheet-service
-          uri: lb://timesheet-service
-          predicates:
-            - Path=/timesheet-service/**
+#        - id: timesheet-service
+#          uri: lb://timesheet-service
+#          predicates:
+#            - Path=/timesheet-service/**
         - id: composite-service
           uri: lb://composite-service
           predicates:
             - Path=/composite-service/**
-
+  main:
+    web-application-type: reactive
 server:
   port: 9000
 

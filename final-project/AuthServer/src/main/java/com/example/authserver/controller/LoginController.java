@@ -54,4 +54,9 @@ public class LoginController {
             return null;
         }
     }
+
+//    @GetMapping("/jwtInfo")
+//    public ResponseEntity<String> getJwtInfo(@RequestParam String jwt) {
+//        httpHeader jwt
+//    }
 }
