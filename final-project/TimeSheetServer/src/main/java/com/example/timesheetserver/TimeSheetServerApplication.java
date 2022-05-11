@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -32,6 +33,7 @@ import java.util.stream.Stream;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableEurekaClient
 public class TimeSheetServerApplication {
 
     @Autowired
