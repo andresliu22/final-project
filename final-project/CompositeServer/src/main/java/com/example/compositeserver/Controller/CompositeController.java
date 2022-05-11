@@ -62,6 +62,7 @@ public class CompositeController {
     }
 
 
+
     @PostMapping("/upload_test")
     ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file){
         return ResponseEntity.ok(compositeService.uploadFile(file));
@@ -79,7 +80,7 @@ public class CompositeController {
         return ResponseEntity.ok(compositeService.get5Summary(jwt));
     }
 
-    @PostMapping("/showmore")
+    @GetMapping("/showmore")
     ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestParam String jwt){
         return ResponseEntity.ok(compositeService.showMore(ls,jwt));
     }
