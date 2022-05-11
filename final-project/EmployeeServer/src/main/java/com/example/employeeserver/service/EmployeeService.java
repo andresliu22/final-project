@@ -10,14 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+
+
+    @Transactional(readOnly = true)
+    public List<Employee> getAllEmployees() {
+        List<Employee> employeeList = employeeRepository.findAll();
+       if (!employeeList.isEmpty()){
+        return employeeList;
+        }
+        throw new NoEmployeeFoundException(String.format("No Employee found"));
+    }
     @Transactional(readOnly = true)
     public EmployeeDomain findEmployeeById(Integer id) {
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
@@ -44,7 +52,7 @@ public class EmployeeService {
 
             updatedEmployee.setCellPhone(employee.getCellPhone());
             updatedEmployee.setEmail(employee.getEmail());
-            updatedEmployee.setAddresses(employee.getAddresses());
+//            updatedEmployee.setAddresses(employee.getAddresses());
             employeeRepository.save(updatedEmployee);
             return updatedEmployee;
         }
