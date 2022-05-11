@@ -42,8 +42,8 @@ public class TimeSheetServerApplication {
 
 
         SpringApplication.run(TimeSheetServerApplication.class, args);
-        TimeSheetServerApplication ta=new TimeSheetServerApplication();
-        ta.scheduleAddSummary();
+//        TimeSheetServerApplication ta=new TimeSheetServerApplication();
+//        ta.scheduleAddSummary();
     }
 
      @Scheduled(fixedRate=1000,initialDelay = 1000)

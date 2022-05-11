@@ -44,7 +44,7 @@ public interface RemoteTimeSheetService {
      void createSummary(@RequestBody SummaryDomain sd);
 
     @GetMapping("timesheet-service/all")
-     ResponseEntity<List<SummaryDomain>> allSummary();
+     ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token);
 
     @GetMapping("timesheet-service/home")
      ResponseEntity<List<SummaryDomain>> get5Summary(@RequestParam String jwt);

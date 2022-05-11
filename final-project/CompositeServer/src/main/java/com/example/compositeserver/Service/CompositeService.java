@@ -79,8 +79,8 @@ public class CompositeService {
         remoteTimeSheetService.createSummary(sd);
     }
 
-   public List<SummaryDomain> allSummary(){
-        return remoteTimeSheetService.allSummary().getBody();
+   public List<SummaryDomain> allSummary(String token){
+        return remoteTimeSheetService.allSummary(token).getBody();
     }
 
     public List<SummaryDomain> get5Summary(String jwt){

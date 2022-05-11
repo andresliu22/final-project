@@ -29,8 +29,8 @@ public class CompositeController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<SummaryDomain>> allSummary(){
-        return ResponseEntity.ok(compositeService.allSummary());
+    public ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.allSummary(token));
     }
 
     @DeleteMapping("/delete")

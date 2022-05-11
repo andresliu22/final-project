@@ -2,12 +2,17 @@ package com.example.timesheetserver.controller;
 
 
 import com.example.timesheetserver.domain.SummaryDomain;
+import com.example.timesheetserver.entity.User;
 import com.example.timesheetserver.security.JwtUtil;
 import com.example.timesheetserver.service.AmazonS3Service;
+import com.example.timesheetserver.service.UserService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import com.example.timesheetserver.service.TimeSheetService;
 import com.example.timesheetserver.domain.TimeSheetDomain;
@@ -30,6 +35,9 @@ public class TimeSheetController {
 //
 //    };
 
+    @Autowired
+    private UserService userService;
+
     Gson gson = new Gson();
 
 
@@ -43,10 +51,11 @@ public class TimeSheetController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity deleteTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd) {
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        timeSheetService.deleteTimeSheet(userid, weekEnd);
+    public ResponseEntity deleteTimeSheet(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(required=true) String weekEnd) {
+//        String u=JwtUtil.getSubjectFromJwt(jwt);
+//        int userid=Integer.parseInt(u);
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        timeSheetService.deleteTimeSheet(currentUser.getUserId(), weekEnd);
         return new ResponseEntity(HttpStatus.OK);
     }
 
