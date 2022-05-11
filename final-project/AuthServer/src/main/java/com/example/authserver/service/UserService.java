@@ -5,6 +5,9 @@ import com.example.authserver.entity.User;
 import com.example.authserver.exception.NoUserFoundException;
 import com.example.authserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
@@ -24,7 +27,7 @@ public class UserService {
             UserDomain userDomain = UserDomain
                     .builder()
                     .userId(user.getUserId())
-                    .userName(user.getUserName())
+                    .userName(user.getUsername())
                     .userPassword(user.getUserPassword())
                     .userRole(user.getUserRole())
                     .build();
@@ -37,6 +40,11 @@ public class UserService {
         } else {
             throw new NoUserFoundException(String.format("User with username [%s] not found", username));
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        return userRepository.findUserByUserName(s).orElseThrow(() -> new UsernameNotFoundException("Username: " + s + " not found"));
     }
 
 }
