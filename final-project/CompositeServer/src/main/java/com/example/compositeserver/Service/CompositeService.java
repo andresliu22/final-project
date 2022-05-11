@@ -32,8 +32,8 @@ public class CompositeService {
         this.remoteEmployeeService = remoteEmployeeService;
     }
 
-    public List<Employee> getAllEmployees(){
-        List<Employee> EmployeeList = remoteEmployeeService.getAllEmployees().getBody();
+    public List<Employee> getAllEmployees(String token){
+        List<Employee> EmployeeList = remoteEmployeeService.getAllEmployees(token).getBody();
         return EmployeeList;
     }
 

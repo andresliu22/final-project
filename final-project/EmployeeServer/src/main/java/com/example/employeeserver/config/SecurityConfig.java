@@ -57,8 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
 //                .antMatchers("/*").permitAll()  // all users are permitted
 //                .antMatchers("/**").permitAll()  // all users are permitted
-                .antMatchers("/employee-service/**").hasRole("USER")
-                .antMatchers("/employee-service/*").hasRole("USER")
+                .antMatchers("/employee-service/**", "/composite-service/**").hasRole("USER")
+                .antMatchers("/employee-service/*", "/composite-service/*").hasRole("USER")
 //                .antMatchers("/**").hasRole("USER")
 //                .antMatchers("/*").hasRole("USER")
 

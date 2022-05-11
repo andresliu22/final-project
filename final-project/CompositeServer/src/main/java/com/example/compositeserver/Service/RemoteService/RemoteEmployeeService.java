@@ -12,7 +12,7 @@ import java.util.List;
 public interface RemoteEmployeeService {
 
     @GetMapping("employee-service/getAllEmployees")
-    ResponseEntity<List<Employee>> getAllEmployees();
+    ResponseEntity<List<Employee>> getAllEmployees(@RequestHeader("Authorization") String token);
 
 //
 //    @PostMapping("xxxxx")

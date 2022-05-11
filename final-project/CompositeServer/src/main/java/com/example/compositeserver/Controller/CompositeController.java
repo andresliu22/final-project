@@ -24,10 +24,9 @@ public class CompositeController {
     }
 
     @GetMapping("/getAllEmployee")
-    public ResponseEntity getAllEmployee(){
-        return ResponseEntity.ok(compositeService.getAllEmployees());
+    public ResponseEntity getAllEmployee(@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.getAllEmployees(token));
     }
-    // how can we get header?
 
     @GetMapping("/all")
     public ResponseEntity<List<SummaryDomain>> allSummary(){
