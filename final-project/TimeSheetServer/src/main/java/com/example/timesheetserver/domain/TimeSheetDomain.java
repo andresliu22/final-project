@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.List;
 import com.example.timesheetserver.domain.DayDomain;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -14,9 +15,9 @@ public class TimeSheetDomain {
 
     private List<DayDomain> days;
 
-    private int totalBillingHours;
+    private double totalBillingHours;
 
-    private int totalCompensatedHours;
+    private double totalCompensatedHours;
 
     private String approvalStatus;
 

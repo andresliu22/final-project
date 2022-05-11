@@ -1,15 +1,14 @@
 package com.example.timesheetserver.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @Builder
 @ToString
+
 public class SummaryDomain {
     private String weekEnding;
-    private int totalHours;
+    private double totalHours;
     private String submissionStatus;
     private String approvalStatus;
     private String option;

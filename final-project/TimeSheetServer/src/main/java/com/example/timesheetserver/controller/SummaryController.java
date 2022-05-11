@@ -5,6 +5,7 @@ import com.example.timesheetserver.service.SummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.timesheetserver.security.*;
 
 import java.util.List;
 
@@ -27,8 +28,11 @@ public class SummaryController {
     }
 
     @GetMapping("/home")
-    public ResponseEntity get5Summary(){
-        List<SummaryDomain> list=summaryService.get5summaries();
+    public ResponseEntity get5Summary(@RequestParam String jwt){
+
+        String u=JwtUtil.getSubjectFromJwt(jwt);
+        int userid=Integer.parseInt(u);
+        List<SummaryDomain> list=summaryService.get5summaries(userid);
         if(list!=null) {
             return ResponseEntity.ok(list);
         }
@@ -37,9 +41,11 @@ public class SummaryController {
         }
     }
 
-    @GetMapping("showmore")
-    public ResponseEntity showMore(@RequestBody List<SummaryDomain> ls){
-        return ResponseEntity.ok(summaryService.ShowMore(ls));
+    @PostMapping("showmore")
+    public ResponseEntity showMore(@RequestBody List<SummaryDomain> ls,@RequestParam String jwt){
+        String u=JwtUtil.getSubjectFromJwt(jwt);
+        int userid=Integer.parseInt(u);
+        return ResponseEntity.ok(summaryService.ShowMore(ls,userid));
     }
 
     @GetMapping("/delete")
@@ -49,8 +55,17 @@ public class SummaryController {
 
 
     @GetMapping("/edit")
-    public ResponseEntity edit(@RequestParam String weekEnding){
+    public ResponseEntity edit(@RequestParam String weekEnding,String jwt){
+        String u=JwtUtil.getSubjectFromJwt(jwt);
+        int userid=Integer.parseInt(u);
+        return ResponseEntity.ok(summaryService.edit(weekEnding,userid));
+    }
 
+    @GetMapping("/view")
+    public ResponseEntity view(@RequestParam String weekEnding,String jwt){
+        String u=JwtUtil.getSubjectFromJwt(jwt);
+        int userid=Integer.parseInt(u);
+        return ResponseEntity.ok(summaryService.view(weekEnding,userid));
     }
 }
 

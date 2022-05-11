@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AuthServer/AuthServer.iml" filepath="$PROJECT_DIR$/AuthServer/AuthServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/CompositeServer/CompositeServer.iml" filepath="$PROJECT_DIR$/CompositeServer/CompositeServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/ConfigServer/ConfigServer.iml" filepath="$PROJECT_DIR$/ConfigServer/ConfigServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/EmployeeServer/EmployeeServer.iml" filepath="$PROJECT_DIR$/EmployeeServer/EmployeeServer.iml" />

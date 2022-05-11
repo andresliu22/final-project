@@ -24,9 +24,9 @@ public class TimeSheet {
 
     private List<String> days;
 
-    private int totalBillingHours;
+    private double totalBillingHours;
 
-    private int totalCompensatedHours;
+    private double totalCompensatedHours;
 
     private String approvalStatus;
 
@@ -42,7 +42,7 @@ public class TimeSheet {
 
 
     @PersistenceConstructor
-    public TimeSheet(int userid, List<String> days, int totalBillingHours, int totalCompensatedHours, String approvalStatus, String submissionStatus,
+    public TimeSheet(int userid, List<String> days, double totalBillingHours, double totalCompensatedHours, String approvalStatus, String submissionStatus,
                      int floatingDaysWeek, int vocationDaysWeek, String filePath,String weekEnd) {
         this.userid = userid;
         this.days = days;

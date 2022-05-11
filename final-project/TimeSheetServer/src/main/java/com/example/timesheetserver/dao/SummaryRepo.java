@@ -11,6 +11,7 @@ public interface SummaryRepo extends MongoRepository<Summary, Integer> {
     List<Summary> findTop5ByOrderByWeekEndingDesc();
     Summary findTopByOrderByWeekEndingDesc();
 
+    Summary findByWeekEnding(String weekending);
     List<Summary> findAllByOrderByWeekEndingDesc();
 
 }

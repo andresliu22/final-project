@@ -17,7 +17,20 @@ public interface TimesheetRepo extends MongoRepository<TimeSheet, String> {
 
 //    Optional<TimeSheet> findFirst5ByWeekEnd(String weekEnd, Sort sort);
 //
-    TimeSheet findByWeekEnd(String weekend);
+
+    void deleteByUseridAndWeekEnd(int userid, String weekEnd);
+
+    void deleteByUserid(int userid);
+
+    // https://docs.spring.io/spring-data/mongodb/docs/1.2.0.RELEASE/reference/html/mongo.repositories.html
+
+    //    Optional<TimeSheet> findFirst5ByWeekEnd(String weekEnd, Sort sort);
+//
+    TimeSheet findByWeekEndAndUserid(String weekEnd, int userid);
+
+
+    List<TimeSheet> findByUserid(int userId);
+
 
 
 
