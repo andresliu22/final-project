@@ -44,17 +44,17 @@ public class CompositeService {
 
 
 
-    public void deleteTimeSheet(String jwt, String weekEnd) {
-        remoteTimeSheetService.deleteTimeSheet(jwt,weekEnd);
+    public void deleteTimeSheet(String token, String weekEnd) {
+        remoteTimeSheetService.deleteTimeSheet(token,weekEnd);
     }
 
-    public void createById(@RequestParam(required=true) String jwt){
-        remoteTimeSheetService.createById(jwt);
+    public void createById(@RequestParam(required=true) String token){
+        remoteTimeSheetService.createById(token);
     }
 
 
-    public TimeSheetDomain getTimeSheet(String jwt, String weekEnd){
-        return  remoteTimeSheetService.getTimeSheet(jwt,weekEnd).getBody();
+    public TimeSheetDomain getTimeSheet(String token, String weekEnd){
+        return  remoteTimeSheetService.getTimeSheet(token,weekEnd).getBody();
     }
 
 
@@ -83,13 +83,13 @@ public class CompositeService {
         return remoteTimeSheetService.allSummary(token).getBody();
     }
 
-    public List<SummaryDomain> get5Summary(String jwt){
-        return remoteTimeSheetService.get5Summary(jwt).getBody();
+    public List<SummaryDomain> get5Summary(String token){
+        return remoteTimeSheetService.get5Summary(token).getBody();
     }
 
 
-    public List<SummaryDomain> showMore(List<SummaryDomain> ls,String jwt){
-        return remoteTimeSheetService.showMore(ls,jwt).getBody();
+    public List<SummaryDomain> showMore(List<SummaryDomain> ls,String token){
+        return remoteTimeSheetService.showMore(ls,token).getBody();
     }
 
 
@@ -99,13 +99,13 @@ public class CompositeService {
 //
 //
 
-    public TimeSheetDomain edit(String weekEnding,String jwt){
-        return remoteTimeSheetService.edit(weekEnding,jwt).getBody();
+    public TimeSheetDomain edit(String weekEnding,String token){
+        return remoteTimeSheetService.edit(weekEnding,token).getBody();
     }
 
 //    @GetMapping("/view")
-    public TimeSheetDomain view(String weekEnding,String jwt){
-        return remoteTimeSheetService.view(weekEnding,jwt).getBody();
+    public TimeSheetDomain view(String weekEnding,String token){
+        return remoteTimeSheetService.view(weekEnding,token).getBody();
     }
 
 

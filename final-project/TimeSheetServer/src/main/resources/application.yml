@@ -13,8 +13,8 @@ spring:
         ddl-auto: none
       show-sql: true
 
-    main:
-      allow-circular-references: true
+  main:
+    allow-circular-references: true
 
 server:
   port: ${PORT:0}

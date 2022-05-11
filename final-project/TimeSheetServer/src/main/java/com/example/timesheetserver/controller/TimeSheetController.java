@@ -60,18 +60,19 @@ public class TimeSheetController {
     }
 
     @DeleteMapping("/delete_by_id")
-    public ResponseEntity createById(@RequestParam(required=true) String jwt) {
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        timeSheetService.deleteTimeSheetById(userid);
+    public ResponseEntity createById(@AuthenticationPrincipal UserDetails userDetails) {
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        timeSheetService.deleteTimeSheetById(currentUser.getUserId());
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/get_timesheet")
-    public ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd){
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        TimeSheetDomain tsd = timeSheetService.getTimeSheetDomain(weekEnd,userid);
+    public ResponseEntity<TimeSheetDomain> getTimeSheet(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(required=true) String weekEnd){
+//        String u=JwtUtil.getSubjectFromJwt(jwt);
+//        int userid=Integer.parseInt(u);
+
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        TimeSheetDomain tsd = timeSheetService.getTimeSheetDomain(weekEnd,currentUser.getUserId());
         return ResponseEntity.ok().body(tsd);
     }
 
@@ -109,11 +110,10 @@ public class TimeSheetController {
     }
 
     @GetMapping("/home")
-    public ResponseEntity<List<SummaryDomain>> get5Summary(@RequestParam String jwt){
+    public ResponseEntity<List<SummaryDomain>> get5Summary(@AuthenticationPrincipal UserDetails userDetails){
 
-        String u= JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        List<SummaryDomain> list=timeSheetService.get5summaries(userid);
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        List<SummaryDomain> list=timeSheetService.get5summaries(currentUser.getUserId());
         if(list!=null) {
             return ResponseEntity.ok(list);
         }
@@ -123,10 +123,11 @@ public class TimeSheetController {
     }
 
     @PostMapping("showmore")
-    public ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestParam String jwt){
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        return ResponseEntity.ok(timeSheetService.ShowMore(ls,userid));
+    public ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@AuthenticationPrincipal UserDetails userDetails){
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+
+
+        return ResponseEntity.ok(timeSheetService.ShowMore(ls,currentUser.getUserId()));
     }
 
     @GetMapping("/deleteallsummary")
@@ -136,17 +137,16 @@ public class TimeSheetController {
 
 
     @GetMapping("/edit")
-    public ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,String jwt){
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        return ResponseEntity.ok(timeSheetService.edit(weekEnding,userid));
+    public ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,@AuthenticationPrincipal UserDetails userDetails){
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+
+        return ResponseEntity.ok(timeSheetService.edit(weekEnding,currentUser.getUserId()));
     }
 
     @GetMapping("/view")
-    public ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,String jwt){
-        String u=JwtUtil.getSubjectFromJwt(jwt);
-        int userid=Integer.parseInt(u);
-        return ResponseEntity.ok(timeSheetService.view(weekEnding,userid));
+    public ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,@AuthenticationPrincipal UserDetails userDetails){
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(timeSheetService.view(weekEnding,currentUser.getUserId()));
     }
 
 //    @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="No Pet is found")

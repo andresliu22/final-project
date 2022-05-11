@@ -34,18 +34,18 @@ public class CompositeController {
     }
 
     @DeleteMapping("/delete")
-    void deleteTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd){
-        compositeService.deleteTimeSheet(jwt,weekEnd);
+    void deleteTimeSheet(@RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd){
+        compositeService.deleteTimeSheet(token,weekEnd);
     }
 
     @DeleteMapping("/delete_by_id")
-    void createById(@RequestParam(required=true) String jwt) {
-        compositeService.createById(jwt);
+    void createById(@RequestHeader("Authorization") String token) {
+        compositeService.createById(token);
     }
 
     @GetMapping("/get_timesheet")
-    ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd){
-        return ResponseEntity.ok(compositeService.getTimeSheet(jwt,weekEnd));
+    ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestHeader("Authorization") String token,@RequestParam(required=true) String weekEnd){
+        return ResponseEntity.ok(compositeService.getTimeSheet(token,weekEnd));
     }
 
     @PutMapping("/save")
@@ -75,13 +75,13 @@ public class CompositeController {
 
 
     @GetMapping("/home")
-    ResponseEntity<List<SummaryDomain>> get5Summary(@RequestParam String jwt){
-        return ResponseEntity.ok(compositeService.get5Summary(jwt));
+    ResponseEntity<List<SummaryDomain>> get5Summary(@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.get5Summary(token));
     }
 
     @GetMapping("/showmore")
-    ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestParam String jwt){
-        return ResponseEntity.ok(compositeService.showMore(ls,jwt));
+    ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.showMore(ls,token));
     }
 
     @GetMapping("/deleteallsummary")
@@ -91,12 +91,12 @@ public class CompositeController {
 
 
     @GetMapping("/edit")
-    ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,String jwt){
-        return ResponseEntity.ok(compositeService.edit(weekEnding,jwt));
+    ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.edit(weekEnding,token));
     }
 
     @GetMapping("/view")
-    ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,String jwt){
-        return ResponseEntity.ok(compositeService.view(weekEnding, jwt));
+    ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.view(weekEnding, token));
     }
 }

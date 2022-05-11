@@ -19,13 +19,13 @@ public interface RemoteTimeSheetService {
 
 
     @DeleteMapping("timesheet-service/delete")
-     ResponseEntity deleteTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd) ;
+     ResponseEntity deleteTimeSheet( @RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd) ;
 
     @DeleteMapping("timesheet-service/delete_by_id")
-     ResponseEntity createById(@RequestParam(required=true) String jwt) ;
+     ResponseEntity createById(@RequestHeader("Authorization") String token) ;
 
     @GetMapping("timesheet-service/get_timesheet")
-     ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestParam(required=true) String jwt, @RequestParam(required=true) String weekEnd);
+     ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd);
 
     @PutMapping("timesheet-service/save")
      ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException;
@@ -47,18 +47,18 @@ public interface RemoteTimeSheetService {
      ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token);
 
     @GetMapping("timesheet-service/home")
-     ResponseEntity<List<SummaryDomain>> get5Summary(@RequestParam String jwt);
+     ResponseEntity<List<SummaryDomain>> get5Summary(@RequestParam @RequestHeader("Authorization") String token);
 
     @PostMapping("timesheet-service/showmore")
-     ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestParam String jwt);
+     ResponseEntity<List<SummaryDomain>> showMore(@RequestBody List<SummaryDomain> ls,@RequestHeader("Authorization") String token);
 
     @GetMapping("timesheet-service/deleteallsummary")
      void deleteSummary();
 
 
     @GetMapping("timesheet-service/edit")
-     ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,String jwt);
+     ResponseEntity<TimeSheetDomain> edit(@RequestParam String weekEnding,@RequestHeader("Authorization") String token);
 
     @GetMapping("timesheet-service/view")
-     ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,String jwt);
+     ResponseEntity<TimeSheetDomain> view(@RequestParam String weekEnding,@RequestHeader("Authorization") String token);
 }
