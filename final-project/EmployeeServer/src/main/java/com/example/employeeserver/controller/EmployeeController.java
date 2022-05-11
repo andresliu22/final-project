@@ -10,9 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("employee-service")
@@ -52,6 +58,7 @@ public class EmployeeController {
 
     @GetMapping("/getAllEmployees")
     public ResponseEntity getAllEmployees(){
+        System.out.println(employeeService.getAllEmployees());
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 }

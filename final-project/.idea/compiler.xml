@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="EurekaServer" />
-        <module name="TimeSheetServer" />
         <module name="AuthServer" />
         <module name="EmployeeServer" />
         <module name="ConfigServer" />

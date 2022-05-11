@@ -8,7 +8,6 @@
         <option value="$PROJECT_DIR$/EmployeeServer/pom.xml" />
         <option value="$PROJECT_DIR$/EurekaServer/pom.xml" />
         <option value="$PROJECT_DIR$/GatewayServer/pom.xml" />
-        <option value="$PROJECT_DIR$/TimeSheetServer/pom.xml" />
         <option value="$PROJECT_DIR$/AuthServer/pom.xml" />
       </list>
     </option>
