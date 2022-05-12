@@ -1,6 +1,8 @@
 package com.example.compositeserver.Controller;
 
 
+import com.example.compositeserver.Domain.EmployeeService.Employee;
+import com.example.compositeserver.Domain.EmployeeService.EmployeeAddrContact;
 import com.example.compositeserver.Domain.TimeSheetService.SummaryDomain;
 import com.example.compositeserver.Domain.TimeSheetService.TimeSheetDomain;
 import com.example.compositeserver.Service.CompositeService;
@@ -27,11 +29,25 @@ public class CompositeController {
     }
 
     @GetMapping("/getAllEmployee")
-    public ResponseEntity getAllEmployee(@RequestHeader("Authorization") String token){
+    public ResponseEntity<List<EmployeeAddrContact>> getAllEmployee(@RequestHeader("Authorization") String token){
         logger.trace("Employee Controller");
         logger.info("Active token: " + token);
         return ResponseEntity.ok(compositeService.getAllEmployees(token));
     }
+
+    @PostMapping("/update-employee/{employeeId}")
+    public ResponseEntity<Integer> updateEmployeeById(@RequestHeader("Authorization") String token, @RequestBody EmployeeAddrContact employeeAddrContact, @PathVariable Integer employeeId){
+        logger.trace("Employee Controller");
+        logger.info("Active token: " + token);
+        return ResponseEntity.ok(compositeService.updateEmployeeById(token, employeeAddrContact, employeeId));
+    }
+
+//    @GetMapping("/employee-service/employee-id/{employeeId}")
+//    public ResponseEntity<EmployeeAddrContact> findEmployeeById(@RequestHeader("Authorization") String token, @PathVariable Integer employeeId){
+//        logger.trace("Employee Controller");
+//        logger.info("Active token: " + token);
+//        return ResponseEntity.ok(compositeService.findEmployeeById(token, employeeId));
+//    }
 
     @GetMapping("/all")
     public ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token){

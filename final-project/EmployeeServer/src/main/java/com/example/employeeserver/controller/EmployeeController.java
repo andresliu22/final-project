@@ -1,5 +1,6 @@
 package com.example.employeeserver.controller;
 
+import com.example.employeeserver.domain.EmployeeAddrContact;
 import com.example.employeeserver.domain.EmployeeDomain;
 import com.example.employeeserver.entity.Employee;
 import com.example.employeeserver.exception.NoEmployeeFoundException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,7 +44,7 @@ public class EmployeeController {
 
     @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="No Employee is found")
     @ExceptionHandler(NoEmployeeFoundException.class)
-    public void noPetFound(HttpServletRequest req, NoEmployeeFoundException e) {
+    public void noEmployeeFound(HttpServletRequest req, NoEmployeeFoundException e) {
         LOGGER.warn("URI: "+req.getRequestURI()+", NoEmployeeFoundException: "+e.getMessage());
     }
 
@@ -52,12 +54,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/update-employee/{employeeId}")
-    public ResponseEntity<Integer> updateEmployee(@RequestBody Employee employee, @PathVariable Integer employeeId) {
+    public ResponseEntity<Integer> updateEmployeeById(@RequestBody Employee employee, @PathVariable Integer employeeId) {
         return ResponseEntity.ok().body(employeeService.updateEmployeeById(employee, employeeId));
     }
 
     @GetMapping("/getAllEmployees")
-    public ResponseEntity getAllEmployees(){
+    public ResponseEntity<List<EmployeeAddrContact>> getAllEmployees(){
         System.out.println(employeeService.getAllEmployees());
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }

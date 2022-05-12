@@ -2,6 +2,7 @@ package com.example.compositeserver.Service;
 
 
 import com.example.compositeserver.Domain.EmployeeService.Employee;
+import com.example.compositeserver.Domain.EmployeeService.EmployeeAddrContact;
 import com.example.compositeserver.Domain.TimeSheetService.SummaryDomain;
 import com.example.compositeserver.Domain.TimeSheetService.TimeSheetDomain;
 import com.example.compositeserver.Service.RemoteService.RemoteTimeSheetService;
@@ -32,10 +33,20 @@ public class CompositeService {
         this.remoteEmployeeService = remoteEmployeeService;
     }
 
-    public List<Employee> getAllEmployees(String token){
-        List<Employee> EmployeeList = remoteEmployeeService.getAllEmployees(token).getBody();
+    public List<EmployeeAddrContact> getAllEmployees(String token){
+        List<EmployeeAddrContact> EmployeeList = remoteEmployeeService.getAllEmployees(token).getBody();
         return EmployeeList;
     }
+
+    public Integer updateEmployeeById(String token, EmployeeAddrContact employee, Integer id){
+      Integer employeeId = remoteEmployeeService.updateEmployeeById(token, employee, id).getBody();
+      return employeeId;
+    }
+
+//  public EmployeeAddrContact findEmployeeById(String token, Integer employeeId){
+//    EmployeeAddrContact employee = remoteEmployeeService.findEmployeeById(token, employeeId).getBody();
+//    return employee;
+//  }
 
     public TimeSheetDomain createProduct(TimeSheetDomain tsd){
         TimeSheetDomain res=remoteTimeSheetService.createProduct(tsd).getBody();
@@ -96,9 +107,6 @@ public class CompositeService {
     public void deleteSummary(){
         remoteTimeSheetService.deleteSummary();
     }
-//
-//
-
     public TimeSheetDomain edit(String weekEnding,String token){
         return remoteTimeSheetService.edit(weekEnding,token).getBody();
     }
