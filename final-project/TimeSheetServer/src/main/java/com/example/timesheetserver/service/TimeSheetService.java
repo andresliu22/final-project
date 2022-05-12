@@ -191,7 +191,7 @@ public class TimeSheetService {
         LocalDate date=weekEndingToLocaldate(weekEnding);
 
         for(int i=0;i<7;i++){
-            String startingTime="9：00 A.M.";
+            String startingTime="9:00 A.M.";
             String endingTime="6:00 P.M.";
             if(i==0||i==6){
                 startingTime="N/A";
