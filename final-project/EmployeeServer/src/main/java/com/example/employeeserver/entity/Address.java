@@ -18,7 +18,7 @@ public class Address implements Serializable {
     @Column(name = "address_id")
     private Integer addressId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

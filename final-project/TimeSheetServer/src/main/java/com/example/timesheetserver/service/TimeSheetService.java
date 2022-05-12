@@ -511,6 +511,10 @@ public class TimeSheetService {
 
     public String roundHour(String timeValue){
 
+        if ( timeValue.equals("N/A") && timeValue.equals("N/A")) {
+            return ("N/A");
+        }
+
         String[] splitByColon = timeValue.split(":");
         int hoursValue = Integer.parseInt(splitByColon[0]);
 

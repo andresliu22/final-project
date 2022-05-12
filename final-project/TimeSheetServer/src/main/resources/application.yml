@@ -1,7 +1,8 @@
 spring:
   application:
     name: timesheet-service
-    
+
+
   datasource:
     url: jdbc:mysql://db-fp.cts5i6uzwhsx.us-west-1.rds.amazonaws.com:3306/db_fp
     username: root
@@ -15,6 +16,35 @@ spring:
 
   main:
     allow-circular-references: true
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb+srv://Administrator:timesheet123@timesheetcluster.rv3wq.mongodb.net/final_project
+      database: final_project
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60000
+
+  redis:
+    port: 6379
+    host: localhost
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+amazon:
+  s3:
+    bucket-name: tiemsheetbucket05062022
+    endpoint: https://tiemsheetbucket05062022.s3.amazonaws.com/
+    #ADD ACCESS-KEY
+    access-key: XXXXX
+    #ADD SECRET-KEY
+    secret-key: XXXXX
 
 server:
   port: ${PORT:0}
@@ -28,5 +58,3 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8762/eureka
-
-

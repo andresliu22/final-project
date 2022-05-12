@@ -4,6 +4,8 @@ package com.example.compositeserver.Controller;
 import com.example.compositeserver.Domain.TimeSheetService.SummaryDomain;
 import com.example.compositeserver.Domain.TimeSheetService.TimeSheetDomain;
 import com.example.compositeserver.Service.CompositeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequestMapping("composite-service")
 public class CompositeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CompositeController.class);
     private CompositeService compositeService;
 
     @Autowired
@@ -25,11 +28,15 @@ public class CompositeController {
 
     @GetMapping("/getAllEmployee")
     public ResponseEntity getAllEmployee(@RequestHeader("Authorization") String token){
+        logger.trace("Employee Controller");
+        logger.info("Active token: " + token);
         return ResponseEntity.ok(compositeService.getAllEmployees(token));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token){
+        logger.trace("TimeSheet Controller");
+        logger.info("Get all summary");
         return ResponseEntity.ok(compositeService.allSummary(token));
     }
 
