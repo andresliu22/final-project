@@ -92,8 +92,8 @@ public class CompositeController {
 
 
     @PostMapping("/create")
-    void createSummary(@RequestBody SummaryDomain sd){
-        compositeService.createSummary(sd);
+    void createSummary(@RequestBody SummaryDomain sd, @RequestHeader("Authorization") String token){
+        compositeService.createSummary(sd, token);
     }
 
 

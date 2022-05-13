@@ -18,7 +18,7 @@ public interface RemoteTimeSheetService {
      ResponseEntity<TimeSheetDomain> createProduct(@RequestBody TimeSheetDomain tsd) ;
 
 
-    @DeleteMapping("timesheet-service/delete")
+    @DeleteMapping("/timesheet-service/delete")
      ResponseEntity deleteTimeSheet( @RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd) ;
 
     @DeleteMapping("timesheet-service/delete_by_id")
@@ -41,7 +41,7 @@ public interface RemoteTimeSheetService {
 
 
     @PostMapping("timesheet-service/create")
-     void createSummary(@RequestBody SummaryDomain sd);
+     void createSummary(@RequestBody SummaryDomain sd, @RequestHeader("Authorization") String token);
 
     @GetMapping("timesheet-service/all")
      ResponseEntity<List<SummaryDomain>> allSummary(@RequestHeader("Authorization") String token);

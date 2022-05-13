@@ -68,26 +68,19 @@ public class CompositeService {
         return  remoteTimeSheetService.getTimeSheet(token,weekEnd).getBody();
     }
 
-
     public void saveTimeSheet(MultipartFile file, String json, String token) throws IOException{
         remoteTimeSheetService.saveTimeSheet(file,json, token);
-    }
-
-
 
     public void setDefault(TimeSheetDomain tsd){
         remoteTimeSheetService.setDefault(tsd);
     }
 
-
-
-
     public String uploadFile(MultipartFile file){
         return remoteTimeSheetService.uploadFile(file).getBody();
     }
 
-    public void createSummary(SummaryDomain sd){
-        remoteTimeSheetService.createSummary(sd);
+    public void createSummary(SummaryDomain sd, String token){
+        remoteTimeSheetService.createSummary(sd, token);
     }
 
    public List<SummaryDomain> allSummary(String token){
