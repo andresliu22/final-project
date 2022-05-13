@@ -36,7 +36,7 @@ public class CompositeController {
     }
 
     @PostMapping("/update-employee/{employeeId}")
-    public ResponseEntity<Integer> updateEmployeeById(@RequestHeader("Authorization") String token, @RequestBody EmployeeAddrContact employeeAddrContact, @PathVariable Integer employeeId){
+    public ResponseEntity<EmployeeAddrContact> updateEmployeeById(@RequestHeader("Authorization") String token, @RequestBody EmployeeAddrContact employeeAddrContact, @PathVariable Integer employeeId){
         logger.trace("Employee Controller");
         logger.info("Active token: " + token);
         return ResponseEntity.ok(compositeService.updateEmployeeById(token, employeeAddrContact, employeeId));
@@ -72,14 +72,14 @@ public class CompositeController {
     }
 
     @PutMapping("/save")
-    void saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException
+    void saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException
     {
-        compositeService.saveTimeSheet(file,json);
+        compositeService.saveTimeSheet(file,json,token);
     }
 
 
     @PostMapping("/set_default")
-    void setDefault( @RequestBody TimeSheetDomain tsd) {
+    void setDefault( @RequestBody TimeSheetDomain tsd, @RequestHeader("Authorization") String token) {
         compositeService.setDefault(tsd);
     }
 

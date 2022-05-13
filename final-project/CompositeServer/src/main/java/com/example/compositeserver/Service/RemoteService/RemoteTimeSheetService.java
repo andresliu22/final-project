@@ -28,7 +28,7 @@ public interface RemoteTimeSheetService {
      ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd);
 
     @PutMapping("timesheet-service/save")
-     ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException;
+     ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException;
 
 
     @PostMapping("timesheet-service/set_default")

@@ -38,9 +38,9 @@ public class CompositeService {
         return EmployeeList;
     }
 
-    public Integer updateEmployeeById(String token, EmployeeAddrContact employee, Integer id){
-      Integer employeeId = remoteEmployeeService.updateEmployeeById(token, employee, id).getBody();
-      return employeeId;
+    public EmployeeAddrContact updateEmployeeById(String token, EmployeeAddrContact employee, Integer id){
+      EmployeeAddrContact emp = remoteEmployeeService.updateEmployeeById(token, employee, id).getBody();
+      return emp;
     }
 
 //  public EmployeeAddrContact findEmployeeById(String token, Integer employeeId){
@@ -69,8 +69,8 @@ public class CompositeService {
     }
 
 
-    public void saveTimeSheet(MultipartFile file, String json) throws IOException{
-        remoteTimeSheetService.saveTimeSheet(file,json);
+    public void saveTimeSheet(MultipartFile file, String json, String token) throws IOException{
+        remoteTimeSheetService.saveTimeSheet(file,json, token);
     }
 
 
