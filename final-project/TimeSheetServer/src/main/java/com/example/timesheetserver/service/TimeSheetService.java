@@ -42,7 +42,8 @@ import static java.lang.Integer.parseInt;
 @Service
 public class TimeSheetService {
 
-
+    final static int MAX_FLOATING = 3;
+    final static int MAX_VACATION = 3;
     @Autowired
     private SummaryRepo smRepo;
 
@@ -170,7 +171,6 @@ public class TimeSheetService {
     @Transactional
     public TimeSheetDomain view(String weekEnding,int userid){
         TimeSheet res=timesheetRepo.findByWeekEndAndUserid(weekEnding,userid);
-        //System.out.println(res);
         return timesheetToDomain(res);
     }
 
@@ -188,13 +188,16 @@ public class TimeSheetService {
 
             TimeSheet defau=timesheetRepo.findByWeekEndAndUserid("00/00/0000",userid);
             if(defau!=null){
-                return TimeSheetDomain.builder().totalBillingHours(defau.getTotalBillingHours()).
+                TimeSheetDomain tsd = TimeSheetDomain.builder().totalBillingHours(defau.getTotalBillingHours()).
                         approvalStatus(defau.getApprovalStatus())
                         .totalCompensatedHours(defau.getTotalCompensatedHours())
-                        .days(timesheetToDomain(defau).getDays()).
+                        .days(createTimeSheet(summaryToDomain(smd), userid).getDays()).
                         floatingDaysWeek(defau.getFloatingDaysWeek()).
-                        weekEnd(defau.getWeekEnd())
+                        weekEnd(weekEnding)
                         .userid(defau.getUserid()).build();
+
+                createtimeSheet(tsd);
+                return tsd;
             }
             else{
                 TimeSheetDomain tsd = createTimeSheet(summaryToDomain(smd),userid);
@@ -265,8 +268,11 @@ public class TimeSheetService {
 
     public TimeSheetDomain createTimeSheet(SummaryDomain sm,int userid){
 //        List<String> d = getDates("TimeSheetServer/src/main/java/com/example/timesheetserver/resource/holidays.json");
+
         Set<String> dates = new HashSet<String>(Arrays.asList("2022-01-01", "2022-11-24", "2022-12-25", "2022-07-04","2022-09-05", "2022-04-17","2022-04-25","2022-05-01"));
         System.out.println(dates);
+
+
 
         String weekEnding=sm.getWeekEnding();
         List<DayDomain> days=new ArrayList<>();
@@ -384,18 +390,18 @@ public class TimeSheetService {
     public void createtimeSheet(TimeSheetDomain timesheetDomain) {
         //System.out.println("enter here!");
         List<String> daysid = timesheetDomain.getDays().stream().map(d->{
-                Day newday = new Day();
-                newday.setDate(d.getDate());
-                newday.setDay(d.getDay());
-                newday.setIsFloating(d.getIsFloating());
-                newday.setIsHoliday(d.getIsHoliday());
-                newday.setIsVacation(d.getIsVacation());
-                newday.setStartTime(d.getStartTime());
-                newday.setEndTime(d.getEndTime());
+            Day newday = new Day();
+            newday.setDate(d.getDate());
+            newday.setDay(d.getDay());
+            newday.setIsFloating(d.getIsFloating());
+            newday.setIsHoliday(d.getIsHoliday());
+            newday.setIsVacation(d.getIsVacation());
+            newday.setStartTime(d.getStartTime());
+            newday.setEndTime(d.getEndTime());
 
-                Day afterInsert = dayRepo.insert(newday);
-                return afterInsert.getId();
-            }).collect(Collectors.toList());
+            Day afterInsert = dayRepo.insert(newday);
+            return afterInsert.getId();
+        }).collect(Collectors.toList());
 
 //        List<String> newid = daysid.stream()
 //                .map(String::valueOf)
@@ -411,7 +417,7 @@ public class TimeSheetService {
         ts.setWeekEnd(timesheetDomain.getWeekEnd());
         ts.setFloatingDaysWeek(timesheetDomain.getFloatingDaysWeek());
         ts.setVocationDaysWeek(timesheetDomain.getVocationDaysWeek());
-        ts.setFilePath(timesheetDomain.getFilePath());
+        ts.setFilePath("");
 
         timesheetRepo.insert(ts);
     }
@@ -444,10 +450,13 @@ public class TimeSheetService {
                 }
             }
         }
+        System.out.println(floatingCount);
+        System.out.println(vacationCount);
+
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
         if (tsOP.isPresent()) {
-            System.out.println("Enter tsop");
+            //System.out.println("Enter tsop");
             TimeSheet ts = tsOP.get();
             //System.out.println(ts);
             //update each day
@@ -456,6 +465,13 @@ public class TimeSheetService {
             int vc = 0;
             int hc = 0;
 
+
+
+
+
+            floatingCount -= ts.getFloatingDaysWeek();
+            vacationCount -= ts.getVocationDaysWeek();
+
             for (int i = 0; i < ts.getDays().size(); i++) {
                 String did = ts.getDays().get(i);
 
@@ -463,7 +479,7 @@ public class TimeSheetService {
 
                 if (dayOptional.isPresent()) {
 
-                   // System.out.println("Enter day");
+                    // System.out.println("Enter day");
                     Day day = dayOptional.get();
                     day.setDay(tsd.getDays().get(i).getDay());
                     day.setDate(tsd.getDays().get(i).getDate());
@@ -486,7 +502,7 @@ public class TimeSheetService {
                     }
                     if (day.getIsHoliday()) {
                         flag++;
-                        hc++;
+                        if (!day.getDay().equals("Saturday")  && !day.getDay().equals("Sunday")) hc++;
                     }
 
                     try {
@@ -497,13 +513,18 @@ public class TimeSheetService {
                             day.setStartTime("N/A");
                             day.setEndTime(("N/A"));
                         }
-                        else if (floatingCount > 3 || vacationCount > 3) {
-                            throw  new saveException(("Your floating/vacation days have been used up"));
+                        try {
+                            if (floatingCount > MAX_FLOATING || vacationCount > MAX_VACATION) {
+                                throw new saveException("Floating/ Vacation used up!");
+                            }
+                        }
+                        catch (saveException e) {
+                            throw new saveException(e.getMessage());
                         }
                     }
-                   catch (saveException e){
+                    catch (saveException e){
                         throw new saveException(e.getMessage());
-                   }
+                    }
 
 
                     dayRepo.save(day);
@@ -522,6 +543,93 @@ public class TimeSheetService {
             ts.setFloatingDaysWeek(fc);
             timesheetRepo.save(ts);
         }
+        else{
+            TimeSheet ts = new TimeSheet();
+            //System.out.println(ts);
+            //update each day
+            double count = 0;
+            int fc = 0;
+            int vc = 0;
+            int hc = 0;
+
+            for (int i = 0; i < tsd.getDays().size(); i++) {
+                DayDomain dd = tsd.getDays().get(i);
+
+
+
+                //String day = ts.getDays().get(i);
+
+                // System.out.println("Enter day");
+
+
+                int flag = 0;
+                if (dd.getIsVacation()) {
+                    flag++;
+                    vacationCount++;
+                    vc++;
+                }
+
+                if (dd.getIsFloating()) {
+                    flag++;
+                    floatingCount++;
+                    fc++;
+                }
+                if (dd.getIsHoliday()) {
+                    flag++;
+                    if (!dd.getDay().equals("Saturday")  && !dd.getDay().equals("Sunday")) hc++;
+                }
+
+                try {
+                    if (flag > 1) {
+                        throw new saveException("You cannot choose 2 or more!");
+                    }
+                    else if (flag == 1) {
+                        dd.setStartTime("N/A");
+                        dd.setEndTime(("N/A"));
+                    }
+                    else if (floatingCount > 3 || vacationCount > 3) {
+                        throw  new saveException(("Your floating/vacation days have been used up"));
+                    }
+                }
+                catch (saveException e){
+                    throw new saveException(e.getMessage());
+                }
+
+
+
+                if (getTotalBillingHours(dd.getStartTime(), dd.getEndTime()
+                        , dd.getDay()) >= 1) count += getTotalBillingHours(dd.getStartTime(), dd.getEndTime()
+                        , dd.getDay()) - 1;
+
+            }
+            List<String> daysid = tsd.getDays().stream().map(d->{
+                Day newday = new Day();
+                newday.setDate(d.getDate());
+                newday.setDay(d.getDay());
+                newday.setIsFloating(d.getIsFloating());
+                newday.setIsHoliday(d.getIsHoliday());
+                newday.setIsVacation(d.getIsVacation());
+                newday.setStartTime(d.getStartTime());
+                newday.setEndTime(d.getEndTime());
+
+                Day afterInsert = dayRepo.insert(newday);
+                return afterInsert.getId();
+            }).collect(Collectors.toList());
+
+            ts.setUserid(tsd.getUserid());
+            ts.setTotalBillingHours((double)Math.round(count*100)/100);
+            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0 + hc * 8.0);
+            ts.setDays(daysid);
+            ts.setApprovalStatus(tsd.getApprovalStatus());
+            ts.setSubmissionStatus(tsd.getSubmissionStatus());
+            ts.setWeekEnd("00/00/0000");
+            ts.setFloatingDaysWeek(fc);
+            ts.setVocationDaysWeek(vc);
+            ts.setFilePath(tsd.getFilePath());
+            //System.out.println((double)Math.round(count*100)/100);
+
+            timesheetRepo.insert(ts);
+        }
 
     }
 
@@ -530,7 +638,7 @@ public class TimeSheetService {
             int sd = getMinute(sds);
             int ed = getMinute(tds);
             double bhour = (ed - sd) / 60.0;
-           //System.out.println(bhour);
+            //System.out.println(bhour);
             return bhour;
         }
         else return 0;
@@ -622,7 +730,5 @@ public class TimeSheetService {
         else return Integer.toString(Integer.parseInt(splitByColon[0]) + 1) + ":" + "00" + " " + splitForMins[1];
 
     }
-
-
 
 }
