@@ -13,9 +13,18 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -25,6 +34,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +44,8 @@ import java.util.stream.Stream;
 @SpringBootApplication
 @EnableScheduling
 @EnableEurekaClient
+@EnableAsync
+@EnableCaching
 public class TimeSheetServerApplication {
 
     @Autowired
@@ -44,6 +56,22 @@ public class TimeSheetServerApplication {
         SpringApplication.run(TimeSheetServerApplication.class, args);
 //        TimeSheetServerApplication ta=new TimeSheetServerApplication();
 //        ta.scheduleAddSummary();
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        // configure and return an implementation of Spring's CacheManager SPI
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+        cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("showmore"),new ConcurrentMapCache("loaduser")));
+        return cacheManager;
+    }
+
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.example.timesheetserver.controller"))
+                .build();
     }
 
      @Scheduled(fixedRate=1000,initialDelay = 1000)

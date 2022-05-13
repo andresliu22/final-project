@@ -9,7 +9,13 @@ import com.example.timesheetserver.domain.TimeSheetDomain;
 import com.example.timesheetserver.entity.Day;
 import com.example.timesheetserver.entity.Summary;
 import com.example.timesheetserver.entity.TimeSheet;
+import com.example.timesheetserver.exception.saveException;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +25,35 @@ import java.text.DecimalFormat;
 
 import java.sql.Time;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static java.lang.Integer.parseInt;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
+//import org.json.simple.JSONArray;
+//import org.json.simple.JSONObject;
+//import org.json.simple.parser.JSONParser;
+//import org.json.simple.parser.ParseException;
+
+import static java.lang.Integer.parseInt;
+@Log4j2
 @Service
 public class TimeSheetService {
 
 
     @Autowired
     private SummaryRepo smRepo;
+
+//    JSONParser parser = new JSONParser();
+
+    @Autowired
+    private AsyncTimeSheetService asyncTimeSheetService;
+
+
 
     @Transactional
     public void createSummary(SummaryDomain sd){
@@ -46,6 +68,36 @@ public class TimeSheetService {
 
     }
 
+//    List<String> getDates(String filepath) {
+//        List<String> dates = new ArrayList<>();
+//
+//        JSONParser parser = new JSONParser();
+//        try {
+//            Object obj = parser.parse(new FileReader("TimeSheetServer/src/main/java/com/example/timesheetserver/resource/holidays.json"));
+//
+//            JSONObject jsonObject =  (JSONObject) obj;
+//            Object obj1 = (JSONObject) jsonObject.get("response");
+//            JSONObject jobj2 = (JSONObject) obj1;
+//            JSONArray a = (JSONArray) jobj2.get("holidays");
+//            for (Object o : a) {
+//                JSONObject obj3 = (JSONObject) o;
+//                Object obj4 = obj3.get("date");
+//                JSONObject jobj4 = (JSONObject) obj4;
+//                dates.add((String) jobj4.get("iso"));
+//            }
+//
+//            //System.out.println(dates);
+//            return dates;
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        return dates;
+//    }
 
 
     @Transactional
@@ -83,14 +135,38 @@ public class TimeSheetService {
 
 
     @Transactional
+    @Cacheable(cacheNames="showmore")
     public List<SummaryDomain> ShowMore(List<SummaryDomain> ls,int userid){
+
+
         LocalDate date= weekEndingToLocaldate(ls.get(ls.size()-1).getWeekEnding());
         LocalDate cDate=date.minusWeeks(6);
         Summary summary=new Summary();
 
+        log.warn("Async executing: "+ Thread.currentThread().getName());
+
         List<SummaryDomain> res = smRepo.findAllByOrderByWeekEndingDesc().stream().filter((s)->weekEndingToLocaldate(s.getWeekEnding()).isAfter(cDate))
-                .map(p->summaryToDomain(p)).collect(Collectors.toList());
-        return show(res,userid);
+                .map(p-> summaryToDomain(p)).collect(Collectors.toList());
+        CompletableFuture<SummaryDomain>[] csm=res.stream().map(sm->asyncTimeSheetService.show(sm,userid)).toArray(CompletableFuture[]::new);
+
+        CompletableFuture<List<SummaryDomain>> comsm = CompletableFuture
+                .allOf(csm)
+                .thenApply(v->{
+                    return Arrays.stream(csm)
+                            .map(pf->pf.join())
+                            .filter(s->s!=null) //
+                            .collect(Collectors.toList());
+                });
+        try {
+
+            return comsm.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+
     }
 
     @Transactional
@@ -103,6 +179,7 @@ public class TimeSheetService {
 
     @Transactional
     public TimeSheetDomain edit(String weekEnding,int userid){
+//        getDates("TimeSheetServer/src/main/java/com/example/timesheetserver/resource/holidays.json");
         TimeSheet ts=timesheetRepo.findByWeekEndAndUserid(weekEnding,userid);
         Summary smd=smRepo.findByWeekEnding(weekEnding);
 
@@ -186,12 +263,17 @@ public class TimeSheetService {
 
 
     public TimeSheetDomain createTimeSheet(SummaryDomain sm,int userid){
+//        List<String> d = getDates("TimeSheetServer/src/main/java/com/example/timesheetserver/resource/holidays.json");
+        Set<String> dates = new HashSet<String>(Arrays.asList("2022-01-01", "2022-11-24", "2022-12-25", "2022-07-04","2022-09-05", "2022-04-17","2022-04-25","2022-05-01"));
+        System.out.println(dates);
 
         String weekEnding=sm.getWeekEnding();
         List<DayDomain> days=new ArrayList<>();
         String[] weekday={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
         LocalDate date=weekEndingToLocaldate(weekEnding);
 
+
+        int count = 0;
         for(int i=0;i<7;i++){
             String startingTime="9:00 A.M.";
             String endingTime="6:00 P.M.";
@@ -200,15 +282,25 @@ public class TimeSheetService {
                 endingTime="N/A";
             }
 
+            String dstring = date.minusDays(6).plusDays(i).toString();
+            boolean isholiday = false;
+
+            if (dates.contains(dstring)) {
+                startingTime="N/A";
+                endingTime="N/A";
+                isholiday = true;
+                if ( i!=0 && i!=6) count++;
+            }
+
             DayDomain dd=DayDomain.builder().day(weekday[i]).date(localdateToWeekEnding(date.minusDays(6).plusDays(i)))
                     .endTime(endingTime)
-                    .startTime(startingTime).isFloating(false).isHoliday(false).isVacation(false).build();
+                    .startTime(startingTime).isFloating(false).isHoliday(isholiday).isVacation(false).build();
             days.add(dd);
         }
         TimeSheetDomain tsd=TimeSheetDomain.builder().
                 userid(userid).
                 totalCompensatedHours(sm.getTotalHours()).
-                totalBillingHours(sm.getTotalHours()).
+                totalBillingHours(sm.getTotalHours() - count * 8).
                 weekEnd(weekEnding).
                 days(days).
                 floatingDaysWeek(0).
@@ -324,10 +416,28 @@ public class TimeSheetService {
 
 
     @Transactional
-    public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd){
+    public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd, String userid) throws saveException{
         String path = tsd.getFilePath();
         if (file != null) path = s3Service.uploadFile(file);
         System.out.println(path);
+
+        List<TimeSheet> timeSheets = timesheetRepo.findByUserid(Integer.parseInt(userid));
+        int floatingCount = 0;
+        int vacationCount = 0;
+
+        for (TimeSheet ts : timeSheets) {
+            for (int i = 0; i < ts.getDays().size(); i++){
+                String did = ts.getDays().get(i);
+
+                Optional<Day> dayOptional = dayRepo.findById(did);
+
+                if (dayOptional.isPresent()) {
+                    Day day = dayOptional.get();
+                    if (day.getIsFloating()) floatingCount++;
+                    if ( day.getIsVacation()) vacationCount++;
+                }
+            }
+        }
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
         if (tsOP.isPresent()) {
@@ -336,6 +446,9 @@ public class TimeSheetService {
             //System.out.println(ts);
             //update each day
             double count = 0;
+            int fc = 0;
+            int vc = 0;
+
             for (int i = 0; i < ts.getDays().size(); i++) {
                 String did = ts.getDays().get(i);
 
@@ -352,9 +465,41 @@ public class TimeSheetService {
                     day.setIsVacation(tsd.getDays().get(i).getIsVacation());
                     day.setIsHoliday(tsd.getDays().get(i).getIsHoliday());
                     day.setIsFloating(tsd.getDays().get(i).getIsFloating());
+                    int flag = 0;
+                    if (day.getIsVacation()) {
+                        flag++;
+                        vacationCount++;
+                        vc++;
+                    }
+
+                    if (day.getIsFloating()) {
+                        flag++;
+                        floatingCount++;
+                        fc++;
+                    }
+                    if (day.getIsHoliday()) {
+                        flag++;
+                    }
+
+                    try {
+                        if (flag > 1) {
+                            throw new saveException("You cannot choose 2 or more!");
+                        }
+                        else if (flag == 1) {
+                            day.setStartTime("N/A");
+                            day.setEndTime(("N/A"));
+                        }
+                        else if (floatingCount > 3 || vacationCount > 3) {
+                            throw  new saveException(("Your floating/vacation days have been used up"));
+                        }
+                    }
+                   catch (saveException e){
+                        throw new saveException(e.getMessage());
+                   }
+
 
                     dayRepo.save(day);
-                    count += getTotalBillingHours(tsd.getDays().get(i).getStartTime(), tsd.getDays().get(i).getEndTime()
+                    count += getTotalBillingHours(day.getStartTime(), day.getEndTime()
                             , tsd.getDays().get(i).getDay());
 
 
@@ -363,8 +508,12 @@ public class TimeSheetService {
             System.out.println((double)Math.round(count*100)/100);
             ts.setFilePath(path);
             ts.setTotalBillingHours((double)Math.round(count*100)/100);
+            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0);
+            ts.setVocationDaysWeek(vc);
+            ts.setFloatingDaysWeek(fc);
             timesheetRepo.save(ts);
         }
+
     }
 
     double getTotalBillingHours(String sds, String tds, String day) {
@@ -398,82 +547,11 @@ public class TimeSheetService {
 
 
     @Transactional
-    public void setDefault(TimeSheetDomain tsd){
-        Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid("00/00/0000", tsd.getUserid()));
+    public void setDefault(TimeSheetDomain tsd, String userid) throws  saveException{
+        //Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid("00/00/0000", tsd.getUserid()));
 
-
-        if (tsOP.isPresent()) {
-            TimeSheet ts = tsOP.get();
-            System.out.println(ts);
-            //update each day
-            int count = 0;
-            for (int i = 0; i < ts.getDays().size(); i++) {
-                String did = ts.getDays().get(i);
-
-                Optional<Day> dayOptional = dayRepo.findById(did);
-
-                if (dayOptional.isPresent()) {
-                    Day day = dayOptional.get();
-                    day.setDay(tsd.getDays().get(i).getDay());
-                    day.setDate(tsd.getDays().get(i).getDate());
-                    day.setStartTime(tsd.getDays().get(i).getStartTime());
-                    day.setEndTime(tsd.getDays().get(i).getEndTime());
-                    day.setIsVacation(tsd.getDays().get(i).getIsVacation());
-                    day.setIsHoliday(tsd.getDays().get(i).getIsHoliday());
-                    day.setIsFloating(tsd.getDays().get(i).getIsFloating());
-
-                    dayRepo.save(day);
-
-                    count += getTotalBillingHours(tsd.getDays().get(i).getStartTime(), tsd.getDays().get(i).getEndTime()
-                            , tsd.getDays().get(i).getDay());
-                }
-            }
-
-            //ts.setFilePath(tsd.getFilePath());
-            ts.setTotalBillingHours((double)Math.round(count*100)/100);
-            timesheetRepo.save(ts);
-        }
-        else {
-
-            List<String> daysid = tsd.getDays().stream().map(d->{
-                Day newday = new Day();
-                newday.setDate(d.getDate());
-                newday.setDay(d.getDay());
-                newday.setIsFloating(d.getIsFloating());
-                newday.setIsHoliday(d.getIsHoliday());
-                newday.setIsVacation(d.getIsVacation());
-                newday.setStartTime(d.getStartTime());
-                newday.setEndTime(d.getEndTime());
-
-                Day afterInsert = dayRepo.insert(newday);
-                return afterInsert.getId();
-            }).collect(Collectors.toList());
-            double count = 0;
-            for (String did : daysid) {
-                Optional<Day> dayOptional = dayRepo.findById(did);
-                if (dayOptional.isPresent()) {
-                    Day d = dayOptional.get();
-                    count += getTotalBillingHours(d.getStartTime(), d.getEndTime()
-                            , d.getDay());
-                }
-            }
-
-            TimeSheet ts = new TimeSheet();
-            ts.setUserid(tsd.getUserid());
-            ts.setTotalBillingHours((double)Math.round(count*100)/100);
-            ts.setTotalCompensatedHours(tsd.getTotalCompensatedHours());
-            ts.setDays(daysid);
-//            ts.setApprovalStatus(tsd.getApprovalStatus());
-//            ts.setSubmissionStatus(tsd.getSubmissionStatus());
-            ts.setWeekEnd("00/00/0000");
-            ts.setFloatingDaysWeek(tsd.getFloatingDaysWeek());
-            ts.setVocationDaysWeek(tsd.getVocationDaysWeek());
-
-            timesheetRepo.insert(ts);
-        }
-
-
-
+        tsd.setWeekEnd("00/00/0000");
+        saveTimeSheet(null, tsd, userid);
     }
 
     // Convert timesheet entity  to domain

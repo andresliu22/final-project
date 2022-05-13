@@ -16,7 +16,7 @@ public interface RemoteEmployeeService {
     ResponseEntity<List<EmployeeAddrContact>> getAllEmployees(@RequestHeader("Authorization") String token);
 
     @PostMapping("employee-service/update-employee/{employeeId}")
-    ResponseEntity<Integer> updateEmployeeById(@RequestHeader("Authorization") String token, @RequestBody EmployeeAddrContact employee, @PathVariable Integer employeeId);
+    ResponseEntity<EmployeeAddrContact> updateEmployeeById(@RequestHeader("Authorization") String token, @RequestBody EmployeeAddrContact employee, @PathVariable Integer employeeId);
 
 //    @GetMapping("/employee-service/employee-id/{employeeId}")
 //    ResponseEntity<EmployeeAddrContact> findEmployeeById(@RequestHeader("Authorization") String token, @PathVariable Integer employeeId);

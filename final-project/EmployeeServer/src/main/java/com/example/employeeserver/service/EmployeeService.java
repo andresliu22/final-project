@@ -93,40 +93,78 @@ public class EmployeeService {
     }
 
     @Transactional()
-    public Integer updateEmployeeById(Employee employee, Integer id) {
+    public EmployeeAddrContact updateEmployeeById(Employee employee, Integer id) {
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
 
         if (employeeOptional.isPresent()) {
             Employee updatedEmployee = employeeOptional.get();
+            EmployeeAddrContact empAddrCon = EmployeeAddrContact.builder()
+                    .employeeId(updatedEmployee.getEmployeeId())
+                    .userId(updatedEmployee.getUserId())
+                    .firstName(updatedEmployee.getFirstName())
+                    .lastName(updatedEmployee.getLastName())
+                    .email(updatedEmployee.getEmail())
+                    .cellPhone(updatedEmployee.getCellPhone())
+                    .build();
             Optional<Address> addressOptional = addressRepository.findById(updatedEmployee.getAddress().getAddressId());
+            if (addressOptional.isPresent()) {
+                Address updatedAddress = addressOptional.get();
+                updatedAddress.setAddressLine1(employee.getAddress().getAddressLine1());
+                updatedAddress.setAddressLine2(employee.getAddress().getAddressLine2());
+                updatedAddress.setCity(employee.getAddress().getCity());
+                updatedAddress.setState(employee.getAddress().getState());
+                updatedAddress.setZipcode(employee.getAddress().getZipcode());
+                addressRepository.save(updatedAddress);
+
+                AddressDomain addressDomain = AddressDomain.builder()
+                        .addressId(updatedAddress.getAddressId())
+                        .employeeId(updatedAddress.getEmployee().getEmployeeId())
+                        .addressLine1(updatedAddress.getAddressLine1())
+                        .addressLine2(updatedAddress.getAddressLine2())
+                        .state(updatedAddress.getState())
+                        .city(updatedAddress.getCity())
+                        .zipcode(updatedAddress.getZipcode())
+                        .build();
+                empAddrCon.setAddress(addressDomain);
+            }
 
             Optional<List<EmergencyContact>> ecListOptional = ecRepository.findAllByEmployee(updatedEmployee);
-            List<EmergencyContact> ecList = ecListOptional.get();
-            for (int i = 0; i < ecList.size(); i++){
-                EmergencyContact ectemp = ecList.get(i);
-                ecRepository.delete(ectemp);
-            }
-            updatedEmployee.setCellPhone(employee.getCellPhone());
-            updatedEmployee.setEmail(employee.getEmail());
-            Address updatedAddress = addressOptional.get();
-            updatedAddress.setAddressLine1(employee.getAddress().getAddressLine1());
-            updatedAddress.setAddressLine2(employee.getAddress().getAddressLine2());
-            updatedAddress.setCity(employee.getAddress().getCity());
-            updatedAddress.setState(employee.getAddress().getState());
-            updatedAddress.setZipcode(employee.getAddress().getZipcode());
-            Iterator<EmergencyContact> ecIterator = employee.getEmergencyContacts().iterator();
-            while(ecIterator.hasNext()) {
-                EmergencyContact updatedEc = ecIterator.next();
-                updatedEc.setEmployee(updatedEmployee);
-                ecRepository.save(updatedEc);
+
+            if (ecListOptional.isPresent()) {
+                if(employee.getEmergencyContacts() != null ) {
+                    List<EmergencyContact> ecList = ecListOptional.get();
+                    for (int i = 0; i < ecList.size(); i++){
+                        EmergencyContact ectemp = ecList.get(i);
+                        ecRepository.delete(ectemp);
+                    }
+                    Iterator<EmergencyContact> ecIterator = employee.getEmergencyContacts().iterator();
+                    Set<EmergencyContactDomain> ecdSet = new HashSet<EmergencyContactDomain>();
+                    while(ecIterator.hasNext()) {
+                        EmergencyContact updatedEc = ecIterator.next();
+                        updatedEc.setEmployee(updatedEmployee);
+                        ecRepository.save(updatedEc);
+
+                        EmergencyContactDomain ecd = EmergencyContactDomain.builder()
+                                .employeeId(updatedEc.getEmployee().getEmployeeId())
+                                .emergencyContactId(updatedEc.getEmergencyContactId())
+                                .cellPhone(updatedEc.getCellPhone())
+                                .firstName(updatedEc.getFirstName())
+                                .lastName(updatedEc.getLastName()).build();
+                        ecdSet.add(ecd);
+                    }
+                    empAddrCon.setEmergencyContacts(ecdSet);
+                }
             }
 
+            updatedEmployee.setCellPhone(employee.getCellPhone());
+            updatedEmployee.setEmail(employee.getEmail());
+
             employeeRepository.save(updatedEmployee);
-            addressRepository.save(updatedAddress);
-            return updatedEmployee.getEmployeeId();
+            return empAddrCon;
         }
 
         throw new NoEmployeeFoundException(String.format("Employee with id [%s] not found", id));
     }
+
 
 }

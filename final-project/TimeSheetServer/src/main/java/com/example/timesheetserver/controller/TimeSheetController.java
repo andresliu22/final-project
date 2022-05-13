@@ -80,16 +80,18 @@ public class TimeSheetController {
     }
 
     @PutMapping("/save")
-    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException {
+    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json" ) String json, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         TimeSheetDomain tsd =  gson.fromJson(json, TimeSheetDomain.class);
-        timeSheetService.saveTimeSheet(file, tsd);
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        timeSheetService.saveTimeSheet(file, tsd, currentUser.getUserId().toString());
         return new ResponseEntity(HttpStatus.OK);
     }
 
 
     @PostMapping("/set_default")
-    public ResponseEntity setDefault( @RequestBody TimeSheetDomain tsd) {
-        timeSheetService.setDefault(tsd);
+    public ResponseEntity setDefault( @RequestBody TimeSheetDomain tsd, @AuthenticationPrincipal UserDetails userDetails)  {
+        User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
+        timeSheetService.setDefault(tsd, currentUser.getUserId().toString());
         return new ResponseEntity(HttpStatus.OK);
     }
 

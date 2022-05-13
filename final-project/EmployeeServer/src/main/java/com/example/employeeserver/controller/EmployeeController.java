@@ -54,7 +54,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/update-employee/{employeeId}")
-    public ResponseEntity<Integer> updateEmployeeById(@RequestBody Employee employee, @PathVariable Integer employeeId) {
+    public ResponseEntity<EmployeeAddrContact> updateEmployeeById(@RequestBody Employee employee, @PathVariable Integer employeeId) {
         return ResponseEntity.ok().body(employeeService.updateEmployeeById(employee, employeeId));
     }
 

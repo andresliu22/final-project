@@ -1,7 +1,9 @@
 spring:
   application:
     name: timesheet-service
-
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
 
   datasource:
     url: jdbc:mysql://db-fp.cts5i6uzwhsx.us-west-1.rds.amazonaws.com:3306/db_fp
