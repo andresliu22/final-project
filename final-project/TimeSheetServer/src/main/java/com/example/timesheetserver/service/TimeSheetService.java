@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.timesheetserver.service.AmazonS3Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
 import java.text.DecimalFormat;
 
 import java.sql.Time;
@@ -29,10 +31,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 //import org.json.simple.JSONArray;
 //import org.json.simple.JSONObject;
@@ -199,7 +197,10 @@ public class TimeSheetService {
                         .userid(defau.getUserid()).build();
             }
             else{
-                return createTimeSheet(summaryToDomain(smd),userid);
+                TimeSheetDomain tsd = createTimeSheet(summaryToDomain(smd),userid);
+                createtimeSheet(tsd);
+                return tsd;
+
             }
         }
     }
@@ -303,6 +304,7 @@ public class TimeSheetService {
                 totalBillingHours(sm.getTotalHours() - count * 8).
                 weekEnd(weekEnding).
                 days(days).
+                filePath("").
                 floatingDaysWeek(0).
                 vocationDaysWeek(0).
                 approvalStatus("Not approved").
@@ -379,7 +381,7 @@ public class TimeSheetService {
 
 
     @Transactional
-    public void createTimeSheet(TimeSheetDomain timesheetDomain) {
+    public void createtimeSheet(TimeSheetDomain timesheetDomain) {
         //System.out.println("enter here!");
         List<String> daysid = timesheetDomain.getDays().stream().map(d->{
                 Day newday = new Day();
@@ -417,9 +419,13 @@ public class TimeSheetService {
 
     @Transactional
     public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd, String userid) throws saveException{
+        System.out.println(tsd.getWeekEnd());
         String path = tsd.getFilePath();
         if (file != null) path = s3Service.uploadFile(file);
-        System.out.println(path);
+//        System.out.println(path);
+
+//        File file = new File("file:///F:/beaconfire/assignments/Week%201%20Day%203%20-%20Xianzhi%20Luo/short%20answer.pdf");
+
 
         List<TimeSheet> timeSheets = timesheetRepo.findByUserid(Integer.parseInt(userid));
         int floatingCount = 0;
@@ -448,6 +454,7 @@ public class TimeSheetService {
             double count = 0;
             int fc = 0;
             int vc = 0;
+            int hc = 0;
 
             for (int i = 0; i < ts.getDays().size(); i++) {
                 String did = ts.getDays().get(i);
@@ -479,6 +486,7 @@ public class TimeSheetService {
                     }
                     if (day.getIsHoliday()) {
                         flag++;
+                        hc++;
                     }
 
                     try {
@@ -499,8 +507,9 @@ public class TimeSheetService {
 
 
                     dayRepo.save(day);
-                    count += getTotalBillingHours(day.getStartTime(), day.getEndTime()
-                            , tsd.getDays().get(i).getDay());
+                    if (getTotalBillingHours(day.getStartTime(), day.getEndTime()
+                            , tsd.getDays().get(i).getDay()) >= 1) count += getTotalBillingHours(day.getStartTime(), day.getEndTime()
+                            , tsd.getDays().get(i).getDay()) - 1;
 
 
                 }
@@ -508,7 +517,7 @@ public class TimeSheetService {
             System.out.println((double)Math.round(count*100)/100);
             ts.setFilePath(path);
             ts.setTotalBillingHours((double)Math.round(count*100)/100);
-            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0);
+            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0 + hc * 8.0);
             ts.setVocationDaysWeek(vc);
             ts.setFloatingDaysWeek(fc);
             timesheetRepo.save(ts);

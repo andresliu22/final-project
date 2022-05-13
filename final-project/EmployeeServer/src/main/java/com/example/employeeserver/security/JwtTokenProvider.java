@@ -18,7 +18,7 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     private String secretKey = "secret";
-    private long validityInMilliseconds = 3600000; // 1h
+    private long validityInMilliseconds = 999000000; // 1h
 
     @Qualifier("userService")
     @Autowired
