@@ -538,7 +538,7 @@ public class TimeSheetService {
             System.out.println((double)Math.round(count*100)/100);
             ts.setFilePath(path);
             ts.setTotalBillingHours((double)Math.round(count*100)/100);
-            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0 + hc * 8.0);
+            ts.setTotalCompensatedHours((double)Math.round((count + fc * 8.0 + hc * 8.0)*100)/100);
             ts.setVocationDaysWeek(vc);
             ts.setFloatingDaysWeek(fc);
             timesheetRepo.save(ts);
@@ -618,7 +618,7 @@ public class TimeSheetService {
 
             ts.setUserid(tsd.getUserid());
             ts.setTotalBillingHours((double)Math.round(count*100)/100);
-            ts.setTotalCompensatedHours((double)Math.round(count*100)/100 + fc * 8.0 + hc * 8.0);
+            ts.setTotalCompensatedHours((double)Math.round((count + fc * 8.0 + hc * 8.0)*100)/100);
             ts.setDays(daysid);
             ts.setApprovalStatus(tsd.getApprovalStatus());
             ts.setSubmissionStatus(tsd.getSubmissionStatus());
