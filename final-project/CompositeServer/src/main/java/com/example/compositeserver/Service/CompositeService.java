@@ -70,22 +70,23 @@ public class CompositeService {
         return  remoteTimeSheetService.getTimeSheet(token,weekEnd).getBody();
     }
 
-    public void saveTimeSheet(MultipartFile file, String json, String token) throws IOException{
+    public void saveTimeSheet(MultipartFile file, String json, String token) throws IOException {
         //System.out.println(file.getOriginalFilename());
 //        byte [] byteArr=file.getBytes();
 //        long size = file.getSize();
 //        String name = file.getOriginalFilename();
 //        InputStream inputStream = new ByteArrayInputStream(byteArr);
-        remoteTimeSheetService.saveTimeSheet(file,json, token);
+        remoteTimeSheetService.saveTimeSheet(file, json, token);
+    }
 
     public void setDefault(TimeSheetDomain tsd, String token){
         remoteTimeSheetService.setDefault(tsd, token);
     }
 
-    public String uploadFile(MultipartFile file, String token){
+    public String uploadFile(MultipartFile file, String token) {
         return remoteTimeSheetService.uploadFile(file, token).getBody();
 
-
+    }
     public void createSummary(SummaryDomain sd, String token){
         remoteTimeSheetService.createSummary(sd, token);
     }
