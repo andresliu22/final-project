@@ -170,6 +170,7 @@ public class TimeSheetService {
     @Transactional
     public TimeSheetDomain view(String weekEnding,int userid){
         TimeSheet res=timesheetRepo.findByWeekEndAndUserid(weekEnding,userid);
+        //System.out.println(res);
         return timesheetToDomain(res);
     }
 
@@ -264,11 +265,8 @@ public class TimeSheetService {
 
     public TimeSheetDomain createTimeSheet(SummaryDomain sm,int userid){
 //        List<String> d = getDates("TimeSheetServer/src/main/java/com/example/timesheetserver/resource/holidays.json");
-
         Set<String> dates = new HashSet<String>(Arrays.asList("2022-01-01", "2022-11-24", "2022-12-25", "2022-07-04","2022-09-05", "2022-04-17","2022-04-25","2022-05-01"));
         System.out.println(dates);
-
-
 
         String weekEnding=sm.getWeekEnding();
         List<DayDomain> days=new ArrayList<>();
@@ -449,7 +447,7 @@ public class TimeSheetService {
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
         if (tsOP.isPresent()) {
-            //System.out.println("Enter tsop");
+            System.out.println("Enter tsop");
             TimeSheet ts = tsOP.get();
             //System.out.println(ts);
             //update each day
@@ -624,5 +622,7 @@ public class TimeSheetService {
         else return Integer.toString(Integer.parseInt(splitByColon[0]) + 1) + ":" + "00" + " " + splitForMins[1];
 
     }
+
+
 
 }
