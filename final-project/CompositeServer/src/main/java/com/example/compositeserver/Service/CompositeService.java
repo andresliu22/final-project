@@ -13,7 +13,9 @@ import com.example.compositeserver.Service.RemoteService.RemoteEmployeeService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -70,20 +72,25 @@ public class CompositeService {
 
 
     public void saveTimeSheet(MultipartFile file, String json, String token) throws IOException{
+        //System.out.println(file.getOriginalFilename());
+//        byte [] byteArr=file.getBytes();
+//        long size = file.getSize();
+//        String name = file.getOriginalFilename();
+//        InputStream inputStream = new ByteArrayInputStream(byteArr);
         remoteTimeSheetService.saveTimeSheet(file,json, token);
     }
 
 
 
-    public void setDefault(TimeSheetDomain tsd){
-        remoteTimeSheetService.setDefault(tsd);
+    public void setDefault(TimeSheetDomain tsd, String token){
+        remoteTimeSheetService.setDefault(tsd, token);
     }
 
 
 
 
-    public String uploadFile(MultipartFile file){
-        return remoteTimeSheetService.uploadFile(file).getBody();
+    public String uploadFile(MultipartFile file, String token){
+        return remoteTimeSheetService.uploadFile(file, token).getBody();
     }
 
     public void createSummary(SummaryDomain sd){

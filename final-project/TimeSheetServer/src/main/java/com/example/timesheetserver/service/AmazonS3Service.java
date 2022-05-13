@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class AmazonS3Service {
@@ -33,15 +34,16 @@ public class AmazonS3Service {
             metadata.setContentLength(file.getSize());
             s3Client.getClient().putObject(bucketName, file.getOriginalFilename(), file.getInputStream(), metadata);
             return url + file.getOriginalFilename();
-        } catch (IOException ioe) {
+       } catch (Exception ioe) {
             logger.error("IOException: " + ioe.getMessage());
-        } catch (AmazonServiceException serviceException) {
-            logger.info("AmazonServiceException: " + serviceException.getMessage());
-            throw serviceException;
-        } catch (AmazonClientException clientException) {
-            logger.info("AmazonClientException Message: " + clientException.getMessage());
-            throw clientException;
         }
-        return "File not uploaded: " + file.getName();
+//        } catch (AmazonServiceException serviceException) {
+//            logger.info("AmazonServiceException: " + serviceException.getMessage());
+//            throw serviceException;
+//        } catch (AmazonClientException clientException) {
+//            logger.info("AmazonClientException Message: " + clientException.getMessage());
+//            throw clientException;
+//        }
+        return "File not uploaded: " + file.getOriginalFilename();
     }
 }

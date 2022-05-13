@@ -71,28 +71,30 @@ public class CompositeController {
         return ResponseEntity.ok(compositeService.getTimeSheet(token,weekEnd));
     }
 
-    @PutMapping("/save")
-    void saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException
+    @PutMapping(value = "/save", consumes ={"multipart/form-data"})
+    void saveTimeSheet(@RequestPart(name = "file", required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException
     {
+//        System.out.println(file.getOriginalFilename());
+//        System.out.println(file.getBytes());
         compositeService.saveTimeSheet(file,json,token);
     }
 
 
     @PostMapping("/set_default")
     void setDefault( @RequestBody TimeSheetDomain tsd, @RequestHeader("Authorization") String token) {
-        compositeService.setDefault(tsd);
+        compositeService.setDefault(tsd, token);
     }
 
 
 
     @PostMapping("/upload_test")
-    ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file){
-        return ResponseEntity.ok(compositeService.uploadFile(file));
+    ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(compositeService.uploadFile(file, token));
     }
 
 
     @PostMapping("/create")
-    void createSummary(@RequestBody SummaryDomain sd){
+    void createSummary(@RequestBody SummaryDomain sd, @RequestHeader("Authorization") String token){
         compositeService.createSummary(sd);
     }
 
@@ -108,7 +110,7 @@ public class CompositeController {
     }
 
     @GetMapping("/deleteallsummary")
-     void deleteSummary(){
+     void deleteSummary(@RequestHeader("Authorization") String token){
             compositeService.deleteSummary();
             }
 

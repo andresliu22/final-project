@@ -19,6 +19,7 @@ import com.example.timesheetserver.domain.TimeSheetDomain;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -42,11 +43,11 @@ public class TimeSheetController {
 
 
     @PostMapping("/create_timesheet")
-    public ResponseEntity<TimeSheetDomain> createProduct(@RequestBody  TimeSheetDomain tsd) {
-        System.out.println("success before");
-        System.out.println(tsd.getDays());
-        System.out.println("success after");
-        timeSheetService.createTimeSheet(tsd);
+    public ResponseEntity<TimeSheetDomain> createTimesheet(@RequestBody  TimeSheetDomain tsd) {
+//        System.out.println("success before");
+//        System.out.println(tsd.getDays());
+//        System.out.println("success after");
+        timeSheetService.createtimeSheet(tsd);
         return new ResponseEntity(tsd, HttpStatus.CREATED);
     }
 
@@ -76,9 +77,11 @@ public class TimeSheetController {
         return ResponseEntity.ok().body(tsd);
     }
 
-    @PutMapping("/save")
-    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json" ) String json, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+    @PutMapping(path="/save", consumes ={"multipart/form-data"})
+    public ResponseEntity saveTimeSheet(@RequestPart(name = "file", required = false) MultipartFile file, @RequestParam(name = "json" ) String json, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         TimeSheetDomain tsd =  gson.fromJson(json, TimeSheetDomain.class);
+        //System.out.println(file.getOriginalFilename());
+
         User currentUser = (User) userService.loadUserByUsername(userDetails.getUsername());
         timeSheetService.saveTimeSheet(file, tsd, currentUser.getUserId().toString());
         return new ResponseEntity(HttpStatus.OK);
@@ -94,11 +97,11 @@ public class TimeSheetController {
 
 
 
-    @PostMapping("/upload_test")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        return new ResponseEntity<String>(s3Service.uploadFile(file), HttpStatus.OK);
-
-    }
+//    @PostMapping("/upload_test")
+//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal UserDetails userDetails) {
+////        return new ResponseEntity<String>(s3Service.uploadFile(in), HttpStatus.OK);
+//
+//    }
 
 
     @PostMapping("/create")

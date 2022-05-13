@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @FeignClient("timesheet-service")
@@ -27,17 +28,17 @@ public interface RemoteTimeSheetService {
     @GetMapping("timesheet-service/get_timesheet")
      ResponseEntity<TimeSheetDomain> getTimeSheet(@RequestHeader("Authorization") String token, @RequestParam(required=true) String weekEnd);
 
-    @PutMapping("timesheet-service/save")
-     ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException;
+    @PutMapping(value = "timesheet-service/save", consumes ={"multipart/form-data"})
+     ResponseEntity saveTimeSheet( @RequestPart(name = "file", required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException;
 
 
     @PostMapping("timesheet-service/set_default")
-     ResponseEntity setDefault( @RequestBody TimeSheetDomain tsd) ;
+     ResponseEntity setDefault( @RequestBody TimeSheetDomain tsd, @RequestHeader("Authorization") String token) ;
 
 
 
     @PostMapping("timesheet-service/upload_test")
-     ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) ;
+     ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) ;
 
 
     @PostMapping("timesheet-service/create")
