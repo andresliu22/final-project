@@ -29,7 +29,7 @@ public class CompositeServiceTest {
     private static List<EmployeeAddrContact> list;
     private EmployeeAddrContact employee1;
     private Address address1;
-    private String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyZXMiLCJyb2xlcyI6IlJPTEVfVVNFUiIsImlhdCI6MTY1MjQyNTk3NywiZXhwIjoxNjUzNDI0OTc3fQ.2EvPxXL7VDqfTYEcuaeuXIZdmVm3S6RX80eLcWcMof0";
+    private String token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyZXMiLCJyb2xlcyI6IlJPTEVfVVNFUiIsImlhdCI6MTY1MjQzMTYxMiwiZXhwIjoxNjUzNDMwNjEyfQ.CAVweBhYRDFYpeq1-JSM2RFK4Po99IOJMf8d8FtrwEc";
     static {
         list = new ArrayList<>();
         list.add(EmployeeAddrContact.builder().employeeId(1).userId(1).firstName("andres").lastName("liu").email("curiosity@gmail.com").cellPhone(11111).build());
