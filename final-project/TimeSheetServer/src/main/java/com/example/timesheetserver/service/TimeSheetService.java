@@ -96,6 +96,7 @@ public class TimeSheetService {
     @Transactional
     public TimeSheetDomain view(String weekEnding,int userid){
         TimeSheet res=timesheetRepo.findByWeekEndAndUserid(weekEnding,userid);
+        //System.out.println(res);
         return timesheetToDomain(res);
     }
 
@@ -185,6 +186,7 @@ public class TimeSheetService {
 
 
     public TimeSheetDomain createTimeSheet(SummaryDomain sm,int userid){
+
         String weekEnding=sm.getWeekEnding();
         List<DayDomain> days=new ArrayList<>();
         String[] weekday={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
@@ -325,11 +327,11 @@ public class TimeSheetService {
     public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd){
         String path = tsd.getFilePath();
         if (file != null) path = s3Service.uploadFile(file);
-        //System.out.println(path);
+        System.out.println(path);
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
         if (tsOP.isPresent()) {
-            //System.out.println("Enter tsop");
+            System.out.println("Enter tsop");
             TimeSheet ts = tsOP.get();
             //System.out.println(ts);
             //update each day
@@ -533,5 +535,7 @@ public class TimeSheetService {
         else return Integer.toString(Integer.parseInt(splitByColon[0]) + 1) + ":" + "00" + " " + splitForMins[1];
 
     }
+
+
 
 }

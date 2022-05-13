@@ -69,8 +69,8 @@ public class CompositeService {
     }
 
 
-    public void saveTimeSheet(MultipartFile file, String json) throws IOException{
-        remoteTimeSheetService.saveTimeSheet(file,json);
+    public void saveTimeSheet(MultipartFile file, String json, String jwt) throws IOException{
+        remoteTimeSheetService.saveTimeSheet(file,json, jwt);
     }
 
 
@@ -86,8 +86,8 @@ public class CompositeService {
         return remoteTimeSheetService.uploadFile(file).getBody();
     }
 
-    public void createSummary(SummaryDomain sd){
-        remoteTimeSheetService.createSummary(sd);
+    public void createSummary(SummaryDomain sd, String token){
+        remoteTimeSheetService.createSummary(sd, token);
     }
 
    public List<SummaryDomain> allSummary(String token){

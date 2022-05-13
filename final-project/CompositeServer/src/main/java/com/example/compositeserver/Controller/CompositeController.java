@@ -72,9 +72,10 @@ public class CompositeController {
     }
 
     @PutMapping("/save")
-    void saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException
+    void saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json, @RequestHeader("Authorization") String token) throws IOException
     {
-        compositeService.saveTimeSheet(file,json);
+        //System.out.println(json);
+        compositeService.saveTimeSheet(file,json, token);
     }
 
 
@@ -92,8 +93,8 @@ public class CompositeController {
 
 
     @PostMapping("/create")
-    void createSummary(@RequestBody SummaryDomain sd){
-        compositeService.createSummary(sd);
+    void createSummary(@RequestBody SummaryDomain sd, @RequestHeader("Authorization") String token){
+        compositeService.createSummary(sd, token);
     }
 
 
