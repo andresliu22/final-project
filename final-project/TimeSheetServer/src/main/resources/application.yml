@@ -44,9 +44,9 @@ amazon:
     bucket-name: tiemsheetbucket05062022
     endpoint: https://tiemsheetbucket05062022.s3.amazonaws.com/
     #ADD ACCESS-KEY
-    access-key: AKIA35ECPVJWYE6I5NH6
+    access-key: XXXXXX
     #ADD SECRET-KEY
-    secret-key: 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
+    secret-key: XXXXXX
 
 server:
   port: ${PORT:0}
