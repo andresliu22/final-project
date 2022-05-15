@@ -10,7 +10,6 @@ import java.util.List;
 public interface SummaryRepo extends MongoRepository<Summary, Integer> {
     List<Summary> findTop5ByOrderByWeekEndingDesc();
     Summary findTopByOrderByWeekEndingDesc();
-    void deleteAll();
     List<Summary> findAllByOrderByWeekEndingDesc();
 
 }

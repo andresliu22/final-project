@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.timesheetserver.service.AmazonS3Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.text.DecimalFormat;
 
 import java.sql.Time;
 import java.util.List;
@@ -31,6 +32,8 @@ public class TimeSheetService {
 
     @Autowired
     private AmazonS3Service s3Service;
+
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     @Transactional
     public void deleteTimeSheet(int userId, String weekEnd) {
@@ -129,8 +132,8 @@ public class TimeSheetService {
 
     @Transactional
     public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd){
-//        String path = tsd.getFilePath();
-//        if (file != null) path = s3Service.uploadFile(file);
+        String path = tsd.getFilePath();
+        if (file != null) path = s3Service.uploadFile(file);
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
 
@@ -140,7 +143,7 @@ public class TimeSheetService {
             TimeSheet ts = tsOP.get();
             System.out.println(ts);
             //update each day
-            int count = 0;
+            double count = 0;
             for (int i = 0; i < ts.getDays().size(); i++) {
                 String did = ts.getDays().get(i);
 
@@ -148,7 +151,7 @@ public class TimeSheetService {
 
                 if (dayOptional.isPresent()) {
 
-                    System.out.println("Enter day");
+                   // System.out.println("Enter day");
                     Day day = dayOptional.get();
                     day.setDay(tsd.getDays().get(i).getDay());
                     day.setDate(tsd.getDays().get(i).getDate());
@@ -166,22 +169,39 @@ public class TimeSheetService {
                 }
             }
             System.out.println(count);
-//            ts.setFilePath(path);
+            ts.setFilePath(path);
             ts.setTotalBillingHours(count);
             timesheetRepo.save(ts);
         }
     }
 
-    int getTotalBillingHours(String sds, String tds, String day) {
+    double getTotalBillingHours(String sds, String tds, String day) {
         if ( !day.equals("Sunday") && !day.equals("Saturday") && !sds.equals("N/A") && !tds.equals("N/A")) {
-            int sd = parseInt(sds.replaceAll("\\D+",""));
-            int ed = parseInt(tds.replaceAll("\\D+",""));
-            return ed < sd ? ((ed + 12 -sd) > 8 ? 8 : (ed + 12 -sd)): ed-sd;
+            int sd = getMinute(sds);
+            int ed = getMinute(tds);
+            double bhour = (ed - sd) / 60.0;
+            return Math.round(bhour * 100.0) / 100.0;
         }
         else return 0;
     }
 
+    public int getMinute(String timeValue){
 
+        String[] splitByColon = timeValue.split(":");
+        int hoursValue = Integer.parseInt(splitByColon[0]);
+
+        String[] splitForMins = splitByColon[1].split(" ");
+
+        if(splitForMins[1].equals("P.M."))
+        {
+            hoursValue = hoursValue + 12;
+        }
+
+        int minutesValue = Integer.parseInt(splitForMins[0]);
+
+        return 60*hoursValue + minutesValue;
+
+    }
 
 
     @Transactional

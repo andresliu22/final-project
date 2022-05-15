@@ -18,14 +18,14 @@ public class Summary {
     private String id;
     private String weekEnding;
 
-    private int totalHours;
+    private double totalHours;
     private String submissionStatus;
     private String approvalStatues;
     private String option;
     private String comment;
 
     @PersistenceConstructor
-    public Summary(String id, String weekEnding,int totalHours,String submissionStatus,String approvalStatues,String option,String comment) {
+    public Summary(String id, String weekEnding,double totalHours,String submissionStatus,String approvalStatues,String option,String comment) {
         this.id=id;
         this.weekEnding=weekEnding;
         this.submissionStatus=submissionStatus;

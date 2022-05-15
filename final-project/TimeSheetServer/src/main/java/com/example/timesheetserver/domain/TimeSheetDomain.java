@@ -1,23 +1,26 @@
 package com.example.timesheetserver.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 import com.example.timesheetserver.domain.DayDomain;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.PersistenceConstructor;
 
 @Data
 @Builder
+
 public class TimeSheetDomain {
 
     private int userid;
 
     private List<DayDomain> days;
 
-    private int totalBillingHours;
+    private double totalBillingHours;
 
-    private int totalCompensatedHours;
+    private double totalCompensatedHours;
 
     private String approvalStatus;
 
@@ -30,5 +33,7 @@ public class TimeSheetDomain {
     private String filePath;
 
     private String weekEnd;
+
+
 
 }

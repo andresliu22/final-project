@@ -27,43 +27,43 @@ public class TimeSheetServerApplication {
 
 
         SpringApplication.run(TimeSheetServerApplication.class, args);
-//        TimeSheetServerApplication ta = new TimeSheetServerApplication();
-//        ta.scheduleAddSummary();
+        TimeSheetServerApplication ta = new TimeSheetServerApplication();
+        ta.scheduleAddSummary();
     }
 
-//    @Scheduled(fixedRate = 1000000, initialDelay = 1000000)
-//    public void scheduleAddSummary() {
-//        if (smRepo == null) {
-//            return;
-//        }
-//        if (smRepo.findTopByOrderByWeekEndingDesc() == null) {
-//            List<String> dates = collectLocalDates(LocalDate.now().minusMonths(2), LocalDate.now());
-//            for (String s : dates) {
-//                LocalDate d = LocalDate.parse(s);
-//                if (DayOfWeek.of(d.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SATURDAY) {
-//
-//                    addSummary(s);
-//                }
-//            }
-//        }
+    @Scheduled(fixedRate = 1000, initialDelay = 1000)
+    public void scheduleAddSummary() {
+        if (smRepo == null) {
+            return;
+        }
+        if (smRepo.findTopByOrderByWeekEndingDesc() == null) {
+            List<String> dates = collectLocalDates(LocalDate.now().minusMonths(2), LocalDate.now());
+            for (String s : dates) {
+                LocalDate d = LocalDate.parse(s);
+                if (DayOfWeek.of(d.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SATURDAY) {
+
+                    addSummary(s);
+                }
+            }
+        }
 
 
-//        String weekE = smRepo.findTopByOrderByWeekEndingDesc().getWeekEnding().replaceAll("/", "-");
-//        String[] format = weekE.split("-");
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(format[2] + "-");
-//        sb.append(format[0] + "-");
-//        sb.append(format[1]);
-//        weekE = sb.toString();
-//
-//        LocalDate weekEnding = LocalDate.parse(weekE);
-//        LocalDate cur = LocalDate.now();
-//        if (weekEnding.isBefore(cur)) {
-//            LocalDate d = weekEnding.plusWeeks(1);
-//            addSummary(d.toString());
-//        }
+        String weekE = smRepo.findTopByOrderByWeekEndingDesc().getWeekEnding().replaceAll("/", "-");
+        String[] format = weekE.split("-");
+        StringBuilder sb = new StringBuilder();
+        sb.append(format[2] + "-");
+        sb.append(format[0] + "-");
+        sb.append(format[1]);
+        weekE = sb.toString();
 
-//    }
+        LocalDate weekEnding = LocalDate.parse(weekE);
+        LocalDate cur = LocalDate.now();
+        if (weekEnding.isBefore(cur)) {
+            LocalDate d = weekEnding.plusWeeks(1);
+            addSummary(d.toString());
+        }
+
+    }
 
 
     public void addSummary(String date) {
@@ -78,7 +78,7 @@ public class TimeSheetServerApplication {
         sm.setWeekEnding(date);
         sm.setOption("edit");
         sm.setComment("");
-        sm.setTotalHours(40);
+        sm.setTotalHours(40.0);
         sm.setApprovalStatues("N/A");
         sm.setSubmissionStatus("Incomplete");
         smRepo.insert(sm);

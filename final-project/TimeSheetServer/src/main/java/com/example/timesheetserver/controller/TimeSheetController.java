@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/timeSheet")
@@ -57,7 +58,7 @@ public class TimeSheetController {
     }
 
     @PutMapping("/save")
-    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestBody TimeSheetDomain tsd) throws JsonProcessingException {
+    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestBody TimeSheetDomain tsd) throws IOException {
 //        TimeSheetDomain tsd =  new ObjectMapper().readValue(jsonFile, TimeSheetDomain.class);
         timeSheetService.saveTimeSheet(file, tsd);
         return new ResponseEntity(HttpStatus.OK);

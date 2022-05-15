@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 public class SummaryDomain {
     private String weekEnding;
-    private int totalHours;
+    private double totalHours;
     private String submissionStatus;
     private String approvalStatus;
     private String option;
