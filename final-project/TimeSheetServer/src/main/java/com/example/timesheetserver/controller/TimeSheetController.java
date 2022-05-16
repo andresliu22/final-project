@@ -4,6 +4,7 @@ package com.example.timesheetserver.controller;
 import com.example.timesheetserver.service.AmazonS3Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class TimeSheetController {
 //    public ResponseEntity createSummary(){
 //
 //    };
+
+    Gson gson = new Gson();
+
 
     @PostMapping("/create_timesheet")
     public ResponseEntity createProduct(@RequestBody  TimeSheetDomain tsd) {
@@ -58,8 +62,8 @@ public class TimeSheetController {
     }
 
     @PutMapping("/save")
-    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestBody TimeSheetDomain tsd) throws IOException {
-//        TimeSheetDomain tsd =  new ObjectMapper().readValue(jsonFile, TimeSheetDomain.class);
+    public ResponseEntity saveTimeSheet(@RequestParam(name = "file",required = false) MultipartFile file, @RequestParam(name = "json") String json) throws IOException {
+        TimeSheetDomain tsd =  gson.fromJson(json, TimeSheetDomain.class);
         timeSheetService.saveTimeSheet(file, tsd);
         return new ResponseEntity(HttpStatus.OK);
     }

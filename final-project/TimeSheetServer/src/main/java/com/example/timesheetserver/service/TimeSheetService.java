@@ -113,7 +113,7 @@ public class TimeSheetService {
 //        List<String> newid = daysid.stream()
 //                .map(String::valueOf)
 //                .collect(Collectors.toList());
-        System.out.println(daysid);
+        //System.out.println(daysid);
         TimeSheet ts = new TimeSheet();
         ts.setUserid(timesheetDomain.getUserid());
         ts.setTotalBillingHours(timesheetDomain.getTotalBillingHours());
@@ -134,14 +134,13 @@ public class TimeSheetService {
     public void saveTimeSheet(MultipartFile file, TimeSheetDomain tsd){
         String path = tsd.getFilePath();
         if (file != null) path = s3Service.uploadFile(file);
+        //System.out.println(path);
 
         Optional<TimeSheet> tsOP = Optional.ofNullable(timesheetRepo.findByWeekEndAndUserid(tsd.getWeekEnd(), tsd.getUserid()));
-
-
         if (tsOP.isPresent()) {
-            System.out.println("Enter tsop");
+            //System.out.println("Enter tsop");
             TimeSheet ts = tsOP.get();
-            System.out.println(ts);
+            //System.out.println(ts);
             //update each day
             double count = 0;
             for (int i = 0; i < ts.getDays().size(); i++) {
@@ -168,9 +167,9 @@ public class TimeSheetService {
 
                 }
             }
-            System.out.println(count);
+            System.out.println((double)Math.round(count*100)/100);
             ts.setFilePath(path);
-            ts.setTotalBillingHours(count);
+            ts.setTotalBillingHours((double)Math.round(count*100)/100);
             timesheetRepo.save(ts);
         }
     }
@@ -180,7 +179,8 @@ public class TimeSheetService {
             int sd = getMinute(sds);
             int ed = getMinute(tds);
             double bhour = (ed - sd) / 60.0;
-            return Math.round(bhour * 100.0) / 100.0;
+           //System.out.println(bhour);
+            return bhour;
         }
         else return 0;
     }
@@ -231,20 +231,52 @@ public class TimeSheetService {
 
                     dayRepo.save(day);
 
-                    int sd = parseInt(tsd.getDays().get(i).getStartTime().replaceAll("\\D+",""));
-                    int ed = parseInt(tsd.getDays().get(i).getEndTime().replaceAll("\\D+",""));
-
-                    count += ed < sd ? ((ed + 12 -sd) > 8 ? 8 : (ed + 12 -sd)): ed-sd;
+                    count += getTotalBillingHours(tsd.getDays().get(i).getStartTime(), tsd.getDays().get(i).getEndTime()
+                            , tsd.getDays().get(i).getDay());
                 }
             }
 
-            ts.setFilePath(tsd.getFilePath());
-            ts.setTotalBillingHours(count);
+            //ts.setFilePath(tsd.getFilePath());
+            ts.setTotalBillingHours((double)Math.round(count*100)/100);
             timesheetRepo.save(ts);
         }
         else {
-            tsd.setWeekEnd("00/00/0000");
 
+            List<String> daysid = tsd.getDays().stream().map(d->{
+                Day newday = new Day();
+                newday.setDate(d.getDate());
+                newday.setDay(d.getDay());
+                newday.setIsFloating(d.getIsFloating());
+                newday.setIsHoliday(d.getIsHoliday());
+                newday.setIsVacation(d.getIsVacation());
+                newday.setStartTime(d.getStartTime());
+                newday.setEndTime(d.getEndTime());
+
+                Day afterInsert = dayRepo.insert(newday);
+                return afterInsert.getId();
+            }).collect(Collectors.toList());
+            double count = 0;
+            for (String did : daysid) {
+                Optional<Day> dayOptional = dayRepo.findById(did);
+                if (dayOptional.isPresent()) {
+                    Day d = dayOptional.get();
+                    count += getTotalBillingHours(d.getStartTime(), d.getEndTime()
+                            , d.getDay());
+                }
+            }
+
+            TimeSheet ts = new TimeSheet();
+            ts.setUserid(tsd.getUserid());
+            ts.setTotalBillingHours((double)Math.round(count*100)/100);
+            ts.setTotalCompensatedHours(tsd.getTotalCompensatedHours());
+            ts.setDays(daysid);
+//            ts.setApprovalStatus(tsd.getApprovalStatus());
+//            ts.setSubmissionStatus(tsd.getSubmissionStatus());
+            ts.setWeekEnd("00/00/0000");
+            ts.setFloatingDaysWeek(tsd.getFloatingDaysWeek());
+            ts.setVocationDaysWeek(tsd.getVocationDaysWeek());
+
+            timesheetRepo.insert(ts);
         }
 
 
@@ -266,8 +298,8 @@ public class TimeSheetService {
                             .isFloating(d.getIsFloating())
                             .isHoliday(d.getIsHoliday())
                             .isVacation(d.getIsVacation())
-                            .startTime(d.getStartTime())
-                            .endTime(d.getEndTime())
+                            .startTime(roundHour(d.getStartTime()))
+                            .endTime(roundHour(d.getEndTime()))
                             .build();
                 }).collect(Collectors.toList());
 
@@ -286,6 +318,25 @@ public class TimeSheetService {
     }
 
 
+    public String roundHour(String timeValue){
 
+        String[] splitByColon = timeValue.split(":");
+        int hoursValue = Integer.parseInt(splitByColon[0]);
+
+        String[] splitForMins = splitByColon[1].split(" ");
+
+        if(splitForMins[1].equals("P.M."))
+        {
+            hoursValue = hoursValue + 12;
+        }
+
+        int minutesValue = Integer.parseInt(splitForMins[0]);
+
+        if (minutesValue < 30) {
+            return splitByColon[0] + ":" + "00" + " " + splitForMins[1];
+        }
+        else return Integer.toString(Integer.parseInt(splitByColon[0]) + 1) + ":" + "00" + " " + splitForMins[1];
+
+    }
 
 }
